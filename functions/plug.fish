@@ -7,7 +7,7 @@ function plug -a cmd
 
     switch "$cmd"
         case install add
-            set plugins $argv[2..]
+            set plugins $argv[2..-1]
             set installed (plug list)
 
             for plugin in $plugins
@@ -23,7 +23,7 @@ function plug -a cmd
                 plug enable $plugin
             end
         case uninstall rm
-            set plugins $argv[2..]
+            set plugins $argv[2..-1]
             set installed (plug list)
 
             for plugin in $plugins
@@ -42,10 +42,10 @@ function plug -a cmd
             set plugins (command find $plug_path -type d -mindepth 2 -maxdepth 2)
 
             for plugin in $plugins
-                string join / (string split / $plugin)[-2..]
+                string join / (string split / $plugin)[-2..-1]
             end
         case enable
-            set plugins $argv[2..]
+            set plugins $argv[2..-1]
             set installed (plug list)
 
             for plugin in $plugins
@@ -73,7 +73,7 @@ function plug -a cmd
                 end
             end
         case disable
-            set plugins $argv[2..]
+            set plugins $argv[2..-1]
             set installed (plug list)
 
             for plugin in $plugins
@@ -101,7 +101,7 @@ function plug -a cmd
                 end
             end
         case update up
-            set plugins $argv[2..]
+            set plugins $argv[2..-1]
             set installed (plug list)
             test -z "$plugins" && set plugins $installed
 
