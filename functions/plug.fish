@@ -117,7 +117,6 @@ function _plug_enable -a plugin event
 
     for file in $plugin_path/completions/*.fish
         set -a link_files $file
-        builtin source $file
     end
 
     for file in $link_files
