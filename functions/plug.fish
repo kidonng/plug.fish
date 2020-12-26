@@ -43,7 +43,7 @@ function plug -a cmd
                     continue
                 end
 
-                _plug_enable $plugin
+                _plug_enable $plugin install
             end
         case disable
             for plugin in $plugins
@@ -52,7 +52,7 @@ function plug -a cmd
                     continue
                 end
 
-                _plug_disable $plugin
+                _plug_disable $plugin uninstall
             end
         case update up
             test -z "$plugins" && set plugins $installed
@@ -73,11 +73,11 @@ function _plug_install -a plugin
     echo $plugin | read -d / owner repo
     command git clone https://github.com/$plugin $plug_path/$owner/$repo
 
-    _plug_enable $plugin
+    _plug_enable $plugin install
 end
 
 function _plug_uninstall -a plugin
-    _plug_disable $plugin
+    _plug_disable $plugin uninstall
 
     echo Removing $plugin
     echo $plugin | read -d / owner repo
@@ -98,7 +98,7 @@ function _plug_list
     end
 end
 
-function _plug_enable -a plugin
+function _plug_enable -a plugin event
     echo Enabling $plugin
     set plugin_path $plug_path/$plugin
     set link_files
@@ -112,7 +112,7 @@ function _plug_enable -a plugin
     for file in $conf_path/*
         set -a link_files $file
         builtin source $file
-        builtin emit (string replace $conf_path/ '' $file | string replace .fish _install)
+        builtin emit (string replace $conf_path/ '' $file | string replace .fish _$event)
     end
 
     for file in $plugin_path/completions/*
@@ -125,7 +125,7 @@ function _plug_enable -a plugin
     end
 end
 
-function _plug_disable -a plugin
+function _plug_disable -a plugin event
     echo Disabling $plugin
     set plugin_path $plug_path/$plugin
     set unlink_files
@@ -133,7 +133,10 @@ function _plug_disable -a plugin
     set conf_path $plugin_path/conf.d
     for file in $conf_path/*
         set -a unlink_files $file
-        builtin emit (string replace $conf_path/ '' $file | string replace .fish _uninstall)
+
+        if test -n "$event"
+            builtin emit (string replace $conf_path/ '' $file | string replace .fish _$event)
+        end
     end
 
     set func_path $plugin_path/functions
@@ -163,6 +166,6 @@ function _plug_update -a plugin
         _plug_disable $plugin
         command git -C $plugin_path pull --rebase
 
-        _plug_enable $plugin
+        _plug_enable $plugin update
     end
 end
