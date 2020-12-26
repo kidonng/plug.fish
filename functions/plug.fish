@@ -4,6 +4,13 @@ function plug -a cmd -d "Manage Fish plugins"
     set plugins $argv[2..-1]
 
     switch "$cmd"
+        case "" -h --help
+            echo "Usage: plug install    <plugins>"
+            echo "       plug uninstall  <plugins>"
+            echo "       plug list       [-e | -d]"
+            echo "       plug enable     <plugins>"
+            echo "       plug disable    <plugins>"
+            echo "       plug update     [plugins]"
         case install add
             for plugin in $plugins
                 if builtin contains $plugin (_plug_list)
@@ -77,6 +84,9 @@ function plug -a cmd -d "Manage Fish plugins"
 
                 _plug_update $plugin
             end
+        case \*
+            echo "plug: Unknown flag or command: \"$cmd\" (see `plug -h`)" >&2
+            return 1
     end
 end
 

@@ -2,6 +2,8 @@ set commands "install uninstall list enable disable update"
 complete -c plug -x -n __fish_use_subcommand -a $commands
 complete -c plug -x -n "__fish_seen_subcommand_from $commands"
 
+complete -c plug -x -s h -l help -d Help
+
 complete -c plug -x -n "__fish_seen_subcommand_from uninstall rm update up" -a "(_plug_list)"
 
 complete -c plug -x -n "__fish_seen_subcommand_from list" -s e -l enabled -d "Only list enabled plugins"
