@@ -1,7 +1,6 @@
 function plug -a cmd
     test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
     test -e $plug_path || command mkdir -p $plug_path
-    set plug kidonng/fish-plug
     set plugins $argv[2..-1]
     set installed (_plug_list)
 
@@ -25,7 +24,7 @@ function plug -a cmd
                 _plug_uninstall $plugin
             end
 
-            if builtin contains $plug $plugins
+            if ! builtin functions -q plug
                 command rm -r $plug_path
                 set -e plug_path
 
@@ -83,7 +82,7 @@ function _plug_uninstall -a plugin
     set owner_path $plug_path/$owner
     command rm -rf $owner_path/$repo
 
-    set owner_plugins $owner_path/*.fish
+    set owner_plugins $owner_path/*
     if test -z "$owner_plugins"
         command rm -r $owner_path
     end
@@ -161,7 +160,6 @@ function _plug_update -a plugin
     if test $local != $origin
         _plug_disable $plugin
         command git -C $plugin_path pull --rebase
-
         _plug_enable $plugin update
     end
 end
