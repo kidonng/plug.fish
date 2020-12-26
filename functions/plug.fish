@@ -34,7 +34,13 @@ function plug -a cmd
 
                 echo Removing $plugin
                 echo $plugin | read -d / owner repo
-                command rm -rf $plug_path/$owner/$repo
+                set owner_path $plug_path/$owner
+                command rm -rf $owner_path/$repo
+
+                set owner_plugins $owner_path/*
+                if test -z "$owner_plugins"
+                    command rm -r $owner_path
+                end
             end
         case list ls
             set plugins (command find $plug_path -type d -mindepth 2 -maxdepth 2)
