@@ -90,9 +90,7 @@ function _plug_uninstall -a plugin
 end
 
 function _plug_list
-    set plugins (command find $plug_path -type d -mindepth 2 -maxdepth 2)
-
-    for plugin in $plugins
+    for plugin in $plug_path/*/*
         string join / (string split / $plugin)[-2..-1]
     end
 end
