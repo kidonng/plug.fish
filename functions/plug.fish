@@ -2,12 +2,11 @@ function plug -a cmd -d "Manage Fish plugins"
     test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
     test -e $plug_path || command mkdir -p $plug_path
     set plugins $argv[2..-1]
-    set installed (_plug_list)
 
     switch "$cmd"
         case install add
             for plugin in $plugins
-                if builtin contains $plugin $installed
+                if builtin contains $plugin (_plug_list)
                     echo $plugin is already installed
                     continue
                 end
@@ -16,7 +15,7 @@ function plug -a cmd -d "Manage Fish plugins"
             end
         case uninstall rm
             for plugin in $plugins
-                if ! builtin contains $plugin $installed
+                if ! builtin contains $plugin (_plug_list)
                     echo $plugin is not installed
                     continue
                 end
@@ -38,8 +37,13 @@ function plug -a cmd -d "Manage Fish plugins"
             _plug_list $argv
         case enable
             for plugin in $plugins
-                if ! builtin contains $plugin $installed
+                if ! builtin contains $plugin (_plug_list)
                     echo $plugin is not installed
+                    continue
+                end
+
+                if builtin contains $plugin (_plug_list --enabled)
+                    echo $plugin is already enabled
                     continue
                 end
 
@@ -47,8 +51,13 @@ function plug -a cmd -d "Manage Fish plugins"
             end
         case disable
             for plugin in $plugins
-                if ! builtin contains $plugin $installed
+                if ! builtin contains $plugin (_plug_list)
                     echo $plugin is not installed
+                    continue
+                end
+
+                if builtin contains $plugin (_plug_list --disabled)
+                    echo $plugin is already disabled
                     continue
                 end
 
@@ -57,6 +66,7 @@ function plug -a cmd -d "Manage Fish plugins"
 
             _plug_prompt
         case update up
+            set installed (_plug_list)
             test -z "$plugins" && set plugins $installed
 
             for plugin in $plugins
@@ -72,7 +82,10 @@ end
 
 function _plug_install -a plugin
     echo Cloning $plugin
-    command git clone https://github.com/$plugin $plug_path/$plugin
+
+    set plugin_path $plug_path/$plugin
+    command git clone https://github.com/$plugin $plugin_path
+    command mkdir -p $plugin_path/.git/fish-plug
 
     _plug_enable $plugin install
 end
@@ -109,24 +122,15 @@ function _plug_list
 end
 
 function _plug_enable -a plugin event
-    set plugin_path $plug_path/$plugin
-    set git_path $plugin_path/.git/fish-plug
-
-    if test -e $git_path
-        set disabled $git_path/disabled
-
-        if test -e $disabled
-            command rm $disabled
-        else
-            echo $plugin is already enabled
-            return
-        end
-    else
-        command mkdir -p $git_path
-    end
-
     echo Enabling $plugin
+
     set link_files
+    set plugin_path $plug_path/$plugin
+    set disabled $plugin_path/.git/fish-plug/disabled
+
+    if test -e $disabled
+        command rm $disabled
+    end
 
     for file in $plugin_path/functions/*.fish
         set -a link_files $file
@@ -150,19 +154,12 @@ function _plug_enable -a plugin event
 end
 
 function _plug_disable -a plugin event
-    set plugin_path $plug_path/$plugin
-    set git_path $plugin_path/.git/fish-plug
-    set disabled $git_path/disabled
-
-    if test -e $disabled
-        echo $plugin is already disabled
-        return
-    else
-        command touch $disabled
-    end
-
     echo Disabling $plugin
+
     set unlink_files
+    set plugin_path $plug_path/$plugin
+    set disabled $plugin_path/.git/fish-plug/disabled
+    command touch $disabled
 
     set conf_path $plugin_path/conf.d
     for file in $conf_path/*.fish

@@ -1,7 +1,12 @@
-complete -c plug -x -n __fish_use_subcommand -a install
-complete -c plug -x -n __fish_use_subcommand -a uninstall
-complete -c plug -x -n __fish_use_subcommand -a list
-complete -c plug -x -n __fish_use_subcommand -a enable
-complete -c plug -x -n __fish_use_subcommand -a disable
-complete -c plug -x -n __fish_use_subcommand -a update
-complete -c plug -x -n "__fish_seen_subcommand_from uninstall rm enable disable update up" -a "(plug list)"
+set commands "install uninstall list enable disable update"
+complete -c plug -x -n __fish_use_subcommand -a $commands
+complete -c plug -x -n "__fish_seen_subcommand_from $commands"
+
+complete -c plug -x -n "__fish_seen_subcommand_from uninstall rm update up" -a "(_plug_list)"
+
+complete -c plug -x -n "__fish_seen_subcommand_from list" -s e -l enabled -d "Only list enabled plugins"
+complete -c plug -x -n "__fish_seen_subcommand_from list" -s d -l disabled -d "Only list disabled plugins"
+
+complete -c plug -x -n "__fish_seen_subcommand_from enable" -a "(_plug_list --disabled)"
+
+complete -c plug -x -n "__fish_seen_subcommand_from disable" -a "(_plug_list --enabled)"
