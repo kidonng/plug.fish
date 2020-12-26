@@ -83,7 +83,8 @@ function _plug_uninstall -a plugin
     echo Removing $plugin
     command rm -rf $plug_path/$plugin
 
-    set owner_plugins (string split / $plugin -f 1)/*
+    set owner_path $plug_path/(string split / $plugin -f 1)
+    set owner_plugins $owner_path/*
     if test -z "$owner_plugins"
         command rm -r $owner_path
     end
