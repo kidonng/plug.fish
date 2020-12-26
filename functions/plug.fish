@@ -35,7 +35,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
             end
         case list ls
-            _plug_list
+            _plug_list $argv
         case enable
             for plugin in $plugins
                 if ! builtin contains $plugin $installed
@@ -91,7 +91,19 @@ function _plug_uninstall -a plugin
 end
 
 function _plug_list
+    argparse -n "plug list" e/enabled d/disabled -- $argv || return
+
     for plugin in $plug_path/*/*
+        set git_path $plugin/.git/fish-plug
+
+        if test -e $git_path/disabled
+            if set -q _flag_enabled
+                continue
+            end
+        else if set -q _flag_disabled
+            continue
+        end
+
         string join / (string split / $plugin)[-2..-1]
     end
 end
