@@ -24,6 +24,8 @@ function plug -a cmd
                 _plug_uninstall $plugin
             end
 
+            _plug_prompt
+
             if ! builtin functions -q plug
                 command rm -r $plug_path
                 set -e plug_path
@@ -52,6 +54,8 @@ function plug -a cmd
 
                 _plug_disable $plugin uninstall
             end
+
+            _plug_prompt
         case update up
             test -z "$plugins" && set plugins $installed
 
@@ -161,5 +165,11 @@ function _plug_update -a plugin
         _plug_disable $plugin
         command git -C $plugin_path pull --rebase
         _plug_enable $plugin update
+    end
+end
+
+function _plug_prompt
+    if ! builtin functions -q fish_prompt
+        builtin source $__fish_data_dir/functions/fish_prompt.fish
     end
 end
