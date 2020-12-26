@@ -84,7 +84,7 @@ function _plug_uninstall -a plugin
     set owner_path $plug_path/$owner
     command rm -rf $owner_path/$repo
 
-    set owner_plugins $owner_path/*
+    set owner_plugins $owner_path/*.fish
     if test -z "$owner_plugins"
         command rm -r $owner_path
     end
@@ -103,19 +103,19 @@ function _plug_enable -a plugin event
     set plugin_path $plug_path/$plugin
     set link_files
 
-    for file in $plugin_path/functions/*
+    for file in $plugin_path/functions/*.fish
         set -a link_files $file
         builtin source $file
     end
 
     set conf_path $plugin_path/conf.d
-    for file in $conf_path/*
+    for file in $conf_path/*.fish
         set -a link_files $file
         builtin source $file
         builtin emit (string replace $conf_path/ '' $file | string replace .fish _$event)
     end
 
-    for file in $plugin_path/completions/*
+    for file in $plugin_path/completions/*.fish
         set -a link_files $file
         builtin source $file
     end
@@ -131,7 +131,7 @@ function _plug_disable -a plugin event
     set unlink_files
 
     set conf_path $plugin_path/conf.d
-    for file in $conf_path/*
+    for file in $conf_path/*.fish
         set -a unlink_files $file
 
         if test -n "$event"
@@ -140,12 +140,12 @@ function _plug_disable -a plugin event
     end
 
     set func_path $plugin_path/functions
-    for file in $func_path/*
+    for file in $func_path/*.fish
         set -a unlink_files $file
         builtin functions -e (string replace $func_path/ '' $file | string replace .fish '')
     end
 
-    for file in $plugin_path/completions/*
+    for file in $plugin_path/completions/*.fish
         set -a unlink_files $file
     end
 
