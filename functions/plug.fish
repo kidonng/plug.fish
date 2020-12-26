@@ -3,8 +3,6 @@ function plug -a cmd
     test -z "$plug_path" && set -U plug_path $XDG_DATA_HOME/fish/plug
     test -e $plug_path || command mkdir -p $plug_path
 
-    set dirs conf.d functions completions
-
     switch "$cmd"
         case install add
             set plugins $argv[2..-1]
@@ -54,22 +52,29 @@ function plug -a cmd
                     continue
                 end
 
-                echo Linking $plugin
+                echo Enabling $plugin
                 set plugin_path $plug_path/$plugin
-                for dir in $dirs
-                    command ln -s $plugin_path/$dir/* $__fish_config_dir/$dir/
-                end
+                set link_files
 
-                echo Setting $plugin
-
-                for func in $plugin_path/functions/*
-                    builtin source $func
+                for file in $plugin_path/functions/*
+                    set -a link_files $file
+                    builtin source $file
                 end
 
                 set conf_path $plugin_path/conf.d
-                for conf in $conf_path/*
-                    builtin source $conf
-                    builtin emit (string replace $conf_path/ '' $conf | string replace .fish _install)
+                for file in $conf_path/*
+                    set -a link_files $file
+                    builtin source $file
+                    builtin emit (string replace $conf_path/ '' $file | string replace .fish _install)
+                end
+
+                for file in $plugin_path/completions/*
+                    set -a link_files $file
+                    builtin source $file
+                end
+
+                for file in $link_files
+                    command ln -s $file (string replace $plugin_path $__fish_config_dir $file)
                 end
             end
         case disable
@@ -82,22 +87,28 @@ function plug -a cmd
                     continue
                 end
 
-                echo Unlinking $plugin
+                echo Disabling $plugin
                 set plugin_path $plug_path/$plugin
-                for dir in $dirs
-                    command rm (string replace $plugin_path $__fish_config_dir $plugin_path/$dir/*)
-                end
-
-                echo Unsetting $plugin
+                set unlink_files
 
                 set conf_path $plugin_path/conf.d
-                for conf in $conf_path/*
-                    builtin emit (string replace $conf_path/ '' $conf | string replace .fish _uninstall)
+                for file in $conf_path/*
+                    set -a unlink_files $file
+                    builtin emit (string replace $conf_path/ '' $file | string replace .fish _uninstall)
                 end
 
                 set func_path $plugin_path/functions
-                for func in $func_path/*
-                    builtin functions -e (string replace $func_path/ '' $func | string replace .fish '')
+                for file in $func_path/*
+                    set -a unlink_files $file
+                    builtin functions -e (string replace $func_path/ '' $file | string replace .fish '')
+                end
+
+                for file in $plugin_path/completions/*
+                    set -a unlink_files $file
+                end
+
+                for file in $unlink_files
+                    command rm (string replace $plugin_path $__fish_config_dir $file)
                 end
             end
         case update up
