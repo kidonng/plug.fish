@@ -1,4 +1,4 @@
-function plug -a cmd
+function plug -a cmd -d "Manage Fish plugins"
     test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
     test -e $plug_path || command mkdir -p $plug_path
     set plugins $argv[2..-1]
@@ -96,8 +96,23 @@ function _plug_list
 end
 
 function _plug_enable -a plugin event
-    echo Enabling $plugin
     set plugin_path $plug_path/$plugin
+    set git_path $plugin_path/.git/fish-plug
+
+    if test -e $git_path
+        set disabled $git_path/disabled
+
+        if test -e $disabled
+            command rm $disabled
+        else
+            echo $plugin is already enabled
+            return
+        end
+    else
+        command mkdir -p $git_path
+    end
+
+    echo Enabling $plugin
     set link_files
 
     for file in $plugin_path/functions/*.fish
@@ -122,8 +137,18 @@ function _plug_enable -a plugin event
 end
 
 function _plug_disable -a plugin event
-    echo Disabling $plugin
     set plugin_path $plug_path/$plugin
+    set git_path $plugin_path/.git/fish-plug
+    set disabled $git_path/disabled
+
+    if test -e $disabled
+        echo $plugin is already disabled
+        return
+    else
+        command touch $disabled
+    end
+
+    echo Disabling $plugin
     set unlink_files
 
     set conf_path $plugin_path/conf.d
