@@ -1,6 +1,5 @@
 function plug -a cmd
-    test -z "$XDG_DATA_HOME" && set XDG_DATA_HOME ~/.local/share
-    test -z "$plug_path" && set -U plug_path $XDG_DATA_HOME/fish/plug
+    test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
     test -e $plug_path || command mkdir -p $plug_path
     set plug kidonng/fish-plug
     set plugins $argv[2..-1]
