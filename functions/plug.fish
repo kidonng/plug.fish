@@ -72,8 +72,7 @@ end
 
 function _plug_install -a plugin
     echo Cloning $plugin
-    echo $plugin | read -d / owner repo
-    command git clone https://github.com/$plugin $plug_path/$owner/$repo
+    command git clone https://github.com/$plugin $plug_path/$plugin
 
     _plug_enable $plugin install
 end
@@ -82,11 +81,9 @@ function _plug_uninstall -a plugin
     _plug_disable $plugin uninstall
 
     echo Removing $plugin
-    echo $plugin | read -d / owner repo
-    set owner_path $plug_path/$owner
-    command rm -rf $owner_path/$repo
+    command rm -rf $plug_path/$plugin
 
-    set owner_plugins $owner_path/*
+    set owner_plugins (string split / $plugin -f 1)/*
     if test -z "$owner_plugins"
         command rm -r $owner_path
     end
