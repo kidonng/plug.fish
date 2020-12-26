@@ -43,6 +43,11 @@ function plug -a cmd
                     command rm -r $owner_path
                 end
             end
+
+            if builtin contains $plug $plugins
+                command rm -r $plug_path
+                set -e plug_path
+            end
         case list ls
             set plugins (command find $plug_path -type d -mindepth 2 -maxdepth 2)
 
