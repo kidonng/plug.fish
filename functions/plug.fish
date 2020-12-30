@@ -94,7 +94,7 @@ function _plug_install -a plugin
     echo Cloning $plugin
 
     set plugin_path $plug_path/$plugin
-    command git clone https://github.com/$plugin $plugin_path
+    command git clone -q https://github.com/$plugin $plugin_path
     command mkdir -p $plugin_path/.git/fish-plug
 
     _plug_enable $plugin install
@@ -106,7 +106,8 @@ function _plug_uninstall -a plugin
     echo Removing $plugin
     command rm -rf $plug_path/$plugin
 
-    set owner_path $plug_path/(string split / $plugin -f 1)
+    # TODO: use `string split -f` after Fish 3.2
+    set owner_path $plug_path/(string split / $plugin)[1]
     set owner_plugins $owner_path/*
     if test -z "$owner_plugins"
         command rm -r $owner_path
@@ -196,16 +197,17 @@ function _plug_disable -a plugin event
 end
 
 function _plug_update -a plugin
-    echo Updating $plugin
+    echo Fetching $plugin
     set plugin_path $plug_path/$plugin
-    command git -C $plugin_path fetch
+    command git -C $plugin_path fetch -q
 
     set local (command git -C $plugin_path rev-parse HEAD)
     set origin (command git -C $plugin_path rev-parse FETCH_HEAD)
 
     if test $local != $origin
+        echo Updating $plugin from (string sub -l 7 $local) to (string sub -l 7 $origin)
         _plug_disable $plugin
-        command git -C $plugin_path pull --rebase
+        command git -C $plugin_path pull --rebase -q
         _plug_enable $plugin update
     end
 end
