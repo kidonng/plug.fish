@@ -64,14 +64,14 @@ function plug -a cmd -d "Manage Fish plugins"
                 set author_plugins $author/*
 
                 if test -z "$author_plugins"
-                    command rm -r $author
+                    command rm -d $author
                 end
             end
 
             _plug_prompt
 
             if ! builtin functions -q plug
-                command rm -r $plug_path
+                command rm -d $plug_path
                 set -e plug_path
 
                 set functions install uninstall list enable disable update prompt
@@ -136,7 +136,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 set updated_path $states_path/updated
 
                 _plug_disable $plugin
-                command git -C $plugin_path rebase FETCH_HEAD
+                command git -C $plugin_path rebase -q FETCH_HEAD
                 _plug_enable $plugin update
                 command rm $updated_path
             end
@@ -232,7 +232,7 @@ function _plug_enable -a plugin event
     end
 
     for file in $link_files
-        command ln -s $file (string replace $plugin_path $__fish_config_dir $file)
+        command ln -si $file (string replace $plugin_path $__fish_config_dir $file)
     end
 
     if test -e $disabled_path
