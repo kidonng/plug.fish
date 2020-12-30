@@ -90,7 +90,6 @@ Unlike Fisher, Fish plug doesn't copy non-`.fish` files in `functions`, `conf.d`
 
 ## Roadmap
 
-- Create `functions`, `conf.d` and `completions` directories if not exist
 - `plug enable --reload`
 - Install from other remote or local
 - Install a specific version of plugin

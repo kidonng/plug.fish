@@ -12,6 +12,8 @@ function plug -a cmd -d "Manage Fish plugins"
             echo "       plug disable    <plugins>"
             echo "       plug update     [plugins]"
         case install add
+            command mkdir -p $__fish_config_dir/{functions,conf.d,completions}
+
             for plugin in $plugins
                 if builtin contains $plugin (_plug_list)
                     echo $plugin is already installed
