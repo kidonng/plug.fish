@@ -36,7 +36,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 command rm -r $plug_path
                 set -e plug_path
 
-                for func in install uninstall list enable disable update
+                for func in install uninstall list enable disable update prompt
                     builtin functions -e _plug_$func
                 end
             end
