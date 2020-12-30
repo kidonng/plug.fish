@@ -10,6 +10,7 @@ The design of Fish plug is heavily based on [Fisher](https://github.com/jorgebuc
 
 - Install, list, update and uninstall plugins
 - Enable or disable plugins
+- Concurrent cloning/fetching
 - [Fisher plugin](https://github.com/jorgebucaran/fisher#creating-a-plugin) support, including [event system](https://github.com/jorgebucaran/fisher#event-system)
 - Based on Git, easy to hack
 
@@ -96,4 +97,3 @@ Unlike Fisher, Fish plug doesn't copy non-`.fish` files in `functions`, `conf.d`
 - Install a specific version of plugin
 - Pin and unpin plugin version
 - Capture environment variable changes when disabling plugins for recovering
-- Concurrent installing/updating

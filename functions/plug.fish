@@ -28,8 +28,10 @@ function plug -a cmd -d "Manage Fish plugins"
                     continue
                 end
 
-                _plug_install $plugin
+                command fish -c (builtin functions _plug_install | string collect)" && _plug_install $plugin" &
             end
+
+            wait
 
             for dir in $__fish_config_dir/{completions,conf.d,functions}
                 if ! test -e $dir
@@ -123,8 +125,10 @@ function plug -a cmd -d "Manage Fish plugins"
                     continue
                 end
 
-                _plug_update $plugin
+                command fish -c (builtin functions _plug_update | string collect)" && _plug_update $plugin" &
             end
+
+            wait
 
             for plugin in (_plug_list --updated)
                 set plugin_path $plug_path/$plugin
@@ -143,7 +147,7 @@ function plug -a cmd -d "Manage Fish plugins"
 end
 
 function _plug_install -a plugin
-    echo Cloning $plugin
+    echo Installing $plugin
 
     set plugin_path $plug_path/$plugin
     set states_path $plugin_path/.git/fish-plug
@@ -180,7 +184,7 @@ function _plug_list
             continue
         end
 
-        if set -q _flag_updated && ! builtin contains updated $state
+        if set -q _flag_updated && ! builtin contains updated $states
             continue
         end
 
@@ -272,7 +276,7 @@ function _plug_disable -a plugin event
 end
 
 function _plug_update -a plugin
-    echo Fetching $plugin
+    echo Updating $plugin
 
     set plugin_path $plug_path/$plugin
     set states_path $plugin_path/.git/fish-plug
@@ -283,7 +287,7 @@ function _plug_update -a plugin
     set origin (command git -C $plugin_path rev-parse FETCH_HEAD)
 
     if test $local != $origin
-        echo Updating $plugin from (string sub -l 7 $local) to (string sub -l 7 $origin)
+        echo Updated $plugin from (string sub -l 7 $local) to (string sub -l 7 $origin)
         command touch $updated_path
     end
 end
