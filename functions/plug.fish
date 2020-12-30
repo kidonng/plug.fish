@@ -140,10 +140,7 @@ function _plug_enable -a plugin event
     set link_files
     set plugin_path $plug_path/$plugin
     set disabled $plugin_path/.git/fish-plug/disabled
-
-    if test -e $disabled
-        command rm $disabled
-    end
+    command rm -f $disabled
 
     for file in $plugin_path/functions/*.fish
         set -a link_files $file
