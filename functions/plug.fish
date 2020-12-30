@@ -41,6 +41,14 @@ function plug -a cmd -d "Manage Fish plugins"
                 _plug_uninstall $plugin
             end
 
+            for author in $plug_path/*
+                set author_plugins $author/*
+
+                if test -z "$author_plugins"
+                    command rm -r $author
+                end
+            end
+
             _plug_prompt
 
             if ! builtin functions -q plug
@@ -126,13 +134,6 @@ function _plug_uninstall -a plugin
     echo Removing $plugin
 
     command rm -rf $plug_path/$plugin
-
-    # TODO: use `string split -f` after Fish 3.2
-    set owner_path $plug_path/(string split / $plugin)[1]
-    set owner_plugins $owner_path/*
-    if test -z "$owner_plugins"
-        command rm -r $owner_path
-    end
 end
 
 function _plug_list
