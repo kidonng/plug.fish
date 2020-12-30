@@ -48,6 +48,7 @@ List plugins, applying specified filter.
 - If no filter is specified, all installed plugins will be listed.
 - `--enabled` / `-e` lists enabled plugins.
 - `--disabled` / `-d` lists disabled plugins.
+- `--version` / `-v` show plugin version (`git rev-parse --short`)
 
 ### `plug enable <plugins>`
 

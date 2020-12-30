@@ -8,6 +8,7 @@ complete -c plug -x -n "__fish_seen_subcommand_from uninstall rm update up" -a "
 
 complete -c plug -x -n "__fish_seen_subcommand_from list" -s e -l enabled -d "Only list enabled plugins"
 complete -c plug -x -n "__fish_seen_subcommand_from list" -s d -l disabled -d "Only list disabled plugins"
+complete -c plug -x -n "__fish_seen_subcommand_from list" -s v -l version -d "Show plugin version"
 
 complete -c plug -x -n "__fish_seen_subcommand_from enable" -a "(_plug_list --disabled)"
 

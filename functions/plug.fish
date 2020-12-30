@@ -4,7 +4,7 @@ function plug -a cmd -d "Manage Fish plugins"
     set plugins
 
     for arg in $argv[2..-1]
-        if ! builtin contains $arg $plugins
+        if ! builtin contains -- $arg $plugins
             set -a plugins $arg
         end
     end
@@ -39,8 +39,8 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for plugin in (_plug_list --updated)
                 set plugin_path $plug_path/$plugin
-                set git_path $plugin_path/.git/fish-plug
-                set updated_path $git_path/updated
+                set states_path $plugin_path/.git/fish-plug
+                set updated_path $states_path/updated
 
                 _plug_enable $plugin install
                 command rm $updated_path
@@ -128,8 +128,8 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for plugin in (_plug_list --updated)
                 set plugin_path $plug_path/$plugin
-                set git_path $plugin_path/.git/fish-plug
-                set updated_path $git_path/updated
+                set states_path $plugin_path/.git/fish-plug
+                set updated_path $states_path/updated
 
                 _plug_disable $plugin
                 command git -C $plugin_path rebase FETCH_HEAD
@@ -146,11 +146,11 @@ function _plug_install -a plugin
     echo Cloning $plugin
 
     set plugin_path $plug_path/$plugin
-    set git_path $plugin_path/.git/fish-plug
+    set states_path $plugin_path/.git/fish-plug
 
     command git clone -q https://github.com/$plugin $plugin_path
-    command mkdir -p $git_path
-    command touch $git_path/updated
+    command mkdir -p $states_path
+    command touch $states_path/updated
 end
 
 function _plug_uninstall -a plugin
@@ -162,26 +162,39 @@ function _plug_uninstall -a plugin
 end
 
 function _plug_list
-    argparse -n "plug list" e/enabled d/disabled u/updated -- $argv || return
+    argparse -n "plug list" e/enabled d/disabled u/updated v/version -- $argv || return
 
     for plugin_path in $plug_path/*/*
-        set git_path $plugin_path/.git/fish-plug
-        set disabled_path $git_path/disabled
-        set updated_path $git_path/updated
+        set states_path $plugin_path/.git/fish-plug
+        set states $states_path/*
 
-        if set -q _flag_enabled && test -e $disabled_path
+        if test -n "$states"
+            set states (string replace $states_path/ "" $states)
+        end
+
+        if set -q _flag_enabled && builtin contains disabled $states
             continue
         end
 
-        if set -q _flag_disabled && ! test -e $disabled_path
+        if set -q _flag_disabled && ! builtin contains disabled $states
             continue
         end
 
-        if set -q _flag_updated && ! test -e $updated_path
+        if set -q _flag_updated && ! builtin contains updated $state
             continue
         end
 
-        string join / (string split / $plugin_path)[-2..-1]
+        set info (string join / (string split / $plugin_path)[-2..-1])
+
+        if set -q _flag_version
+            set -a info (command git -C $plugin_path rev-parse --short HEAD)
+        end
+
+        if builtin contains disabled $states
+            set -a info \(disabled\)
+        end
+
+        echo $info
     end
 end
 
@@ -192,8 +205,8 @@ function _plug_enable -a plugin event
     set comp_path $plugin_path/completions
     set conf_path $plugin_path/conf.d
     set func_path $plugin_path/functions
-    set git_path $plugin_path/.git/fish-plug
-    set disabled_path $git_path/disabled
+    set states_path $plugin_path/.git/fish-plug
+    set disabled_path $states_path/disabled
     set link_files
 
     for file in $func_path/*.fish
@@ -230,8 +243,8 @@ function _plug_disable -a plugin event
     set comp_path $plugin_path/completions
     set conf_path $plugin_path/conf.d
     set func_path $plugin_path/functions
-    set git_path $plugin_path/.git/fish-plug
-    set disabled_path $git_path/disabled
+    set states_path $plugin_path/.git/fish-plug
+    set disabled_path $states_path/disabled
     set unlink_files
 
     for file in $conf_path/*.fish
@@ -262,8 +275,8 @@ function _plug_update -a plugin
     echo Fetching $plugin
 
     set plugin_path $plug_path/$plugin
-    set git_path $plugin_path/.git/fish-plug
-    set updated_path $git_path/updated
+    set states_path $plugin_path/.git/fish-plug
+    set updated_path $states_path/updated
 
     command git -C $plugin_path fetch -q
     set local (command git -C $plugin_path rev-parse HEAD)
