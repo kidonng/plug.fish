@@ -298,7 +298,9 @@ function _plug_update -a plugin
 end
 
 function _plug_prompt
-    if ! builtin functions -q fish_prompt
-        builtin source $__fish_data_dir/functions/fish_prompt.fish
+    for prompt in fish_prompt fish_mode_prompt
+        if ! builtin functions -q $prompt
+          builtin source $__fish_data_dir/functions/$prompt.fish
+        end
     end
 end
