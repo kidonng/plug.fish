@@ -1,13 +1,7 @@
 function plug -a cmd -d "Manage Fish plugins"
     test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
     test -e $plug_path || command mkdir -p $plug_path
-    set plugins
-
-    for arg in $argv[2..-1]
-        if ! builtin contains -- $arg $plugins
-            set -a plugins $arg
-        end
-    end
+    set plugins $argv[2..-1]
 
     switch "$cmd"
         case "" -h --help
@@ -24,7 +18,7 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for plugin in $plugins
                 if builtin contains $plugin $installed
-                    echo $plugin is already installed
+                    echo plug install: $plugin is already installed
                     continue
                 end
 
@@ -52,7 +46,7 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for plugin in $plugins
                 if ! builtin contains $plugin $installed
-                    echo $plugin is not installed
+                    echo plug uninstall: $plugin is not installed
                     continue
                 end
 
@@ -85,12 +79,12 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for plugin in $plugins
                 if ! builtin contains $plugin $installed
-                    echo $plugin is not installed
+                    echo plug enable: $plugin is not installed
                     continue
                 end
 
                 if builtin contains $plugin $enabled
-                    echo $plugin is already enabled
+                    echo plug enable: $plugin is already enabled
                     continue
                 end
 
@@ -102,12 +96,12 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for plugin in $plugins
                 if ! builtin contains $plugin $installed
-                    echo $plugin is not installed
+                    echo plug disable: $plugin is not installed
                     continue
                 end
 
                 if builtin contains $plugin $disabled
-                    echo $plugin is already disabled
+                    echo plug disable: $plugin is already disabled
                     continue
                 end
 
@@ -121,7 +115,7 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for plugin in $plugins
                 if ! builtin contains $plugin $installed
-                    echo $plugin is not installed
+                    echo plug update: $plugin is not installed
                     continue
                 end
 
@@ -141,24 +135,35 @@ function plug -a cmd -d "Manage Fish plugins"
                 command rm $updated_path
             end
         case \*
-            echo plug: Unknown command or option \"$cmd\" >&2
+            echo plug: unknown command or option \"$cmd\" >&2
             return 1
     end
 end
 
-function _plug_install -a plugin
-    echo Installing $plugin
+function _plug_install -a remote
+    set truncated (string replace -r '(\.git)?/?$' '' $remote)
+
+    if test -e $remote
+        set plugin local/(string split / $truncated)[-1]
+    else if string match -rq '^[\w.-]+/[\w.-]+$' $truncated
+        set plugin $truncated
+        set remote https://github.com/$remote
+    else
+        set plugin (string match -r '[\w.-]+/[\w.-]+$' $truncated)
+    end
+
+    echo plug install: installing $plugin "(from $remote)"
 
     set plugin_path $plug_path/$plugin
     set states_path $plugin_path/.git/fish-plug
 
-    command git clone -q https://github.com/$plugin $plugin_path
+    command git clone -q $remote $plugin_path
     command mkdir -p $states_path
     command touch $states_path/updated
 end
 
 function _plug_uninstall -a plugin
-    echo Removing $plugin
+    echo plug uninstall: uninstalling $plugin
 
     set plugin_path $plug_path/$plugin
 
@@ -191,7 +196,7 @@ function _plug_list
         set info (string join / (string split / $plugin_path)[-2..-1])
 
         if set -q _flag_verbose
-            set -a info (command git -C $plugin_path rev-parse --short HEAD)
+            set info $info@(command git -C $plugin_path rev-parse --short HEAD)
 
             if builtin contains disabled $states
                 set -a info "(disabled)"
@@ -203,7 +208,7 @@ function _plug_list
 end
 
 function _plug_enable -a plugin event
-    echo Enabling $plugin
+    echo plug enable: enabling $plugin
 
     set plugin_path $plug_path/$plugin
     set comp_path $plugin_path/completions
@@ -241,7 +246,7 @@ function _plug_enable -a plugin event
 end
 
 function _plug_disable -a plugin event
-    echo Disabling $plugin
+    echo plug disable: disabling $plugin
 
     set plugin_path $plug_path/$plugin
     set comp_path $plugin_path/completions
@@ -276,7 +281,7 @@ function _plug_disable -a plugin event
 end
 
 function _plug_update -a plugin
-    echo Updating $plugin
+    echo plug update: updating $plugin
 
     set plugin_path $plug_path/$plugin
     set states_path $plugin_path/.git/fish-plug
@@ -287,7 +292,7 @@ function _plug_update -a plugin
     set origin (command git -C $plugin_path rev-parse FETCH_HEAD)
 
     if test $local != $origin
-        echo Updated $plugin from (string sub -l 7 $local) to (string sub -l 7 $origin)
+        echo plug update: updated $plugin to (string sub -l 7 $origin) "(from "(string sub -l 7 $local)")"
         command touch $updated_path
     end
 end

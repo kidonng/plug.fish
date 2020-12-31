@@ -2,17 +2,12 @@
 
 Git-based [Fish](https://fishshell.com/) plugin manager.
 
-<small>
+<small>Fish plug is heavily infulenced by <a href="https://github.com/jorgebucaran/fisher">Fisher</a>. If you want a minimal alternative, check it out.</small>
 
-The design of Fish plug is heavily based on [Fisher](https://github.com/jorgebucaran/fisher). If you want a minimal plugin manager, check it out.
-
-</small>
-
-- Install, list, update and uninstall plugins
-- Enable or disable plugins
-- Concurrent cloning/fetching
-- [Fisher plugin](https://github.com/jorgebucaran/fisher#creating-a-plugin) support, including [event system](https://github.com/jorgebucaran/fisher#event-system)
-- Based on Git, easy to hack
+- Install, list, update and uninstall plugins, with concurrent cloning/fetching
+- Disable and enable plugins
+- Support [Fisher plugin](https://github.com/jorgebucaran/fisher#creating-a-plugin), including [event system](https://github.com/jorgebucaran/fisher#event-system)
+- Fully based on Git and file system, simple yet hackable
 
 ## Installation
 
@@ -22,21 +17,28 @@ curl -sSL https://git.io/fish-plug | source && plug install kidonng/fish-plug
 
 ## Usage
 
-<small>
-
-Currently, Fish plug only supports plugins from GitHub. You can install it along with another plugin manager (such as Fisher) to manage other unsupported plugins.
-
-</small>
-
 ### `plug install/add <plugins>`
 
 Install specified plugins.
 
-Currently Fish plug supports `<GitHub user>/<repository name>` format:
-
 ```sh
-plug install ilancosman/tide franciscolourenco/done
+# From GitHub
+plug install ilancosman/tide jorgebucaran/spark.fish
+# From local Git repository
+plug install ~/my-plugin
+# From any Git remote
+plug install git@github.com:franciscolourenco/done.git
 ```
+
+Fish plug uses the familiar `<author>/<name>` format for referencing plugins.
+
+- When installing a plugin from local, it will be installed as `local/<directory>`.
+
+  In the example above, `~/my-plugin` will be installed as `local/my-plugin`.
+
+- When installing a plugin from a Git remote, it will be installed as the last two parts of the remote separated by `/`.
+
+  In the example above, `git@github.com:franciscolourenco/done.git` will be installed as `franciscolourenco/done`.
 
 ### `plug uninstall/rm <plugins>`
 
@@ -93,7 +95,6 @@ Unlike Fisher, Fish plug doesn't copy non-`.fish` files in `functions`, `conf.d`
 ## Roadmap
 
 - `plug enable --reload`
-- Install from other remote or local
 - Install a specific version of plugin
 - Pin and unpin plugin version
 - Capture environment variable changes when disabling plugins for recovering
