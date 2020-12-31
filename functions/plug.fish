@@ -166,7 +166,7 @@ function _plug_uninstall -a plugin
 end
 
 function _plug_list
-    argparse -n "plug list" e/enabled d/disabled u/updated v/version -- $argv || return
+    argparse -n "plug list" e/enabled d/disabled u/updated v/verbose -- $argv || return
 
     for plugin_path in $plug_path/*/*
         set states_path $plugin_path/.git/fish-plug
@@ -190,12 +190,12 @@ function _plug_list
 
         set info (string join / (string split / $plugin_path)[-2..-1])
 
-        if set -q _flag_version
+        if set -q _flag_verbose
             set -a info (command git -C $plugin_path rev-parse --short HEAD)
-        end
 
-        if builtin contains disabled $states
-            set -a info \(disabled\)
+            if builtin contains disabled $states
+                set -a info "(disabled)"
+            end
         end
 
         echo $info
