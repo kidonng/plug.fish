@@ -18,13 +18,26 @@ function plug -a cmd -d "Manage Fish plugins"
             set plugins $argv[2..-1]
             set installed (_plug_list)
 
-            for plugin in $plugins
+            for raw in $plugins
+                set truncated (string replace -r '(\.git)?/?$' '' $raw)
+
+                if test -e $raw
+                    set plugin local/(string split / $truncated)[-1]
+                    set remote (realpath $raw)
+                else if string match -rq '^[\w.-]+/[\w.-]+$' $truncated
+                    set plugin $truncated
+                    set remote https://github.com/$raw
+                else
+                    set plugin (string match -r '[\w.-]+/[\w.-]+$' $truncated)
+                    set remote $raw
+                end
+
                 if builtin contains $plugin $installed
                     echo plug install: $plugin is already installed
                     continue
                 end
 
-                command fish -c (builtin functions _plug_install | string collect)" && _plug_install $plugin" &
+                command fish -c (builtin functions _plug_install | string collect)" && _plug_install $plugin $remote" &
             end
 
             wait
@@ -198,18 +211,7 @@ function plug -a cmd -d "Manage Fish plugins"
     end
 end
 
-function _plug_install -a remote
-    set truncated (string replace -r '(\.git)?/?$' '' $remote)
-
-    if test -e $remote
-        set plugin local/(string split / $truncated)[-1]
-    else if string match -rq '^[\w.-]+/[\w.-]+$' $truncated
-        set plugin $truncated
-        set remote https://github.com/$remote
-    else
-        set plugin (string match -r '[\w.-]+/[\w.-]+$' $truncated)
-    end
-
+function _plug_install -a plugin remote
     echo plug install: installing $plugin "(from $remote)"
 
     set plugin_path $plug_path/$plugin
