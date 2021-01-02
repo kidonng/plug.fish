@@ -1,0 +1,23 @@
+name: Test
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Fish
+        run: |
+          sudo apt-add-repository -yn ppa:fish-shell/release-3
+          sudo apt update
+          sudo apt install -y fish
+
+      - name: Run tests
+        run: |
+          for test in tests/*.fish
+              echo ===== Running $test =====
+              env HOME=(mktemp -d) fish $test
+          end
+        shell: fish {0}
