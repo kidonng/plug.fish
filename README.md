@@ -2,7 +2,7 @@
 
 Git-based [Fish](https://fishshell.com/) plugin manager.
 
-<small>Fish plug is heavily infulenced by <a href="https://github.com/jorgebucaran/fisher">Fisher</a>. If you want a minimal alternative, check it out.</small>
+> Fish plug is heavily infulenced by [Fisher](https://github.com/jorgebucaran/fisher). If you want a minimal alternative, check it out.
 
 - Install, list, update and uninstall plugins, with concurrent cloning/fetching
 - Disable and enable plugins
@@ -69,7 +69,15 @@ Disable specified plugins.
 
 Update specified plugins.
 
-- If no plugin is specified, all plugins will be updated.
+- If no plugin is specified, all unpinned plugins will be updated.
+
+### `plug pin <plugins>`
+
+Pin plugins. Pinned plugins won't be updated.
+
+### `plug unpin <plugins>`
+
+Unpin previously pinned plugins.
 
 ## Advanced
 
@@ -96,5 +104,4 @@ Unlike Fisher, Fish plug doesn't copy non-`.fish` files in `functions`, `conf.d`
 
 - `plug enable --reload`
 - Install a specific version of plugin
-- Pin and unpin plugin version
 - Capture environment variable changes when disabling plugins for recovering

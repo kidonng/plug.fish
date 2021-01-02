@@ -11,6 +11,8 @@ function plug -a cmd -d "Manage Fish plugins"
             echo "       plug enable     <plugins>"
             echo "       plug disable    <plugins>"
             echo "       plug update     [plugins]"
+            echo "       plug pin        <plugins>"
+            echo "       plug unpin      <plugins>"
             echo "Options:"
             echo "       -h, --help    Show help message"
         case install add
@@ -111,11 +113,17 @@ function plug -a cmd -d "Manage Fish plugins"
             _plug_prompt
         case update up
             set installed (_plug_list)
-            test -z "$plugins" && set plugins $installed
+            set pinned (_plug_list --pinned)
+            test -z "$plugins" && set plugins (_plug_list --unpinned)
 
             for plugin in $plugins
                 if ! builtin contains $plugin $installed
                     echo plug update: $plugin is not installed
+                    continue
+                end
+
+                if builtin contains $plugin $pinned
+                    echo plug update: $plugin is pinned
                     continue
                 end
 
@@ -133,6 +141,48 @@ function plug -a cmd -d "Manage Fish plugins"
                 command git -C $plugin_path rebase -q FETCH_HEAD
                 _plug_enable $plugin update
                 command rm $updated_path
+            end
+        case pin
+            set installed (_plug_list)
+            set pinned (_plug_list --pinned)
+
+            for plugin in $plugins
+                if ! builtin contains $plugin $installed
+                    echo plug pin: $plugin is not installed
+                    continue
+                end
+
+                if builtin contains $plugin $pinned
+                    echo plug pin: $plugin is already pinned
+                    continue
+                end
+
+                set plugin_path $plug_path/$plugin
+                set states_path $plugin_path/.git/fish-plug
+                set pinned_path $states_path/pinned
+
+                command touch $pinned_path
+            end
+        case unpin
+            set installed (_plug_list)
+            set unpinned (_plug_list --unpinned)
+
+            for plugin in $plugins
+                if ! builtin contains $plugin $installed
+                    echo plug unpin: $plugin is not installed
+                    continue
+                end
+
+                if builtin contains $plugin $unpinned
+                    echo plug unpin: $plugin is already unpinned
+                    continue
+                end
+
+                set plugin_path $plug_path/$plugin
+                set states_path $plugin_path/.git/fish-plug
+                set pinned_path $states_path/pinned
+
+                command rm $pinned_path
             end
         case \*
             echo plug: unknown command or option \"$cmd\" >&2
@@ -171,7 +221,7 @@ function _plug_uninstall -a plugin
 end
 
 function _plug_list
-    argparse -n "plug list" e/enabled d/disabled u/updated v/verbose -- $argv || return
+    argparse -n "plug list" e/enabled d/disabled x/updated p/pinned u/unpinned v/verbose -- $argv || return
 
     for plugin_path in $plug_path/*/*
         set states_path $plugin_path/.git/fish-plug
@@ -193,13 +243,27 @@ function _plug_list
             continue
         end
 
+        if set -q _flag_pinned && ! builtin contains pinned $states
+            continue
+        end
+
+        if set -q _flag_unpinned && builtin contains pinned $states
+            continue
+        end
+
         set info (string join / (string split / $plugin_path)[-2..-1])
 
         if set -q _flag_verbose
-            set info $info@(command git -C $plugin_path rev-parse --short HEAD)
+            if test (command git -C $plugin_path rev-parse --is-inside-work-tree) = true
+                set -a info @(command git -C $plugin_path rev-parse --short HEAD)
+            end
 
             if builtin contains disabled $states
-                set -a info "(disabled)"
+                set -a info "#disabled"
+            end
+
+            if builtin contains pinned $states
+                set -a info "#pinned"
             end
         end
 
@@ -300,7 +364,7 @@ end
 function _plug_prompt
     for prompt in fish_prompt fish_mode_prompt
         if ! builtin functions -q $prompt
-          builtin source $__fish_data_dir/functions/$prompt.fish
+            builtin source $__fish_data_dir/functions/$prompt.fish
         end
     end
 end
