@@ -16,5 +16,6 @@ complete -c plug -x -n "__fish_seen_subcommand_from enable" -a "(_plug_list --di
 complete -c plug -x -n "__fish_seen_subcommand_from disable" -a "(_plug_list --enabled)"
 
 complete -c plug -x -n "__fish_seen_subcommand_from update up pin" -a "(_plug_list --unpinned)"
+complete -c plug -x -n "__fish_seen_subcommand_from update up" -s f -l force -d "Force update pinned plugins"
 
 complete -c plug -x -n "__fish_seen_subcommand_from unpin" -a "(_plug_list --pinned)"

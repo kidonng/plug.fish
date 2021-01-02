@@ -1,7 +1,6 @@
 function plug -a cmd -d "Manage Fish plugins"
     test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
     test -e $plug_path || command mkdir -p $plug_path
-    set plugins $argv[2..-1]
 
     switch "$cmd"
         case "" -h --help
@@ -16,6 +15,7 @@ function plug -a cmd -d "Manage Fish plugins"
             echo "Options:"
             echo "       -h, --help    Show help message"
         case install add
+            set plugins $argv[2..-1]
             set installed (_plug_list)
 
             for plugin in $plugins
@@ -44,6 +44,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 command rm $updated_path
             end
         case uninstall rm
+            set plugins $argv[2..-1]
             set installed (_plug_list)
 
             for plugin in $plugins
@@ -76,6 +77,7 @@ function plug -a cmd -d "Manage Fish plugins"
         case list ls
             _plug_list $argv
         case enable
+            set plugins $argv[2..-1]
             set installed (_plug_list)
             set enabled (_plug_list --enabled)
 
@@ -93,6 +95,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 _plug_enable $plugin install
             end
         case disable
+            set plugins $argv[2..-1]
             set installed (_plug_list)
             set disabled (_plug_list --disabled)
 
@@ -112,9 +115,12 @@ function plug -a cmd -d "Manage Fish plugins"
 
             _plug_prompt
         case update up
+            argparse -n "plug update" f/force -- $argv || return
+
+            set -q argv[2] || set -a argv (_plug_list --unpinned)
+            set plugins $argv[2..-1]
             set installed (_plug_list)
             set pinned (_plug_list --pinned)
-            test -z "$plugins" && set plugins (_plug_list --unpinned)
 
             for plugin in $plugins
                 if ! builtin contains $plugin $installed
@@ -122,7 +128,7 @@ function plug -a cmd -d "Manage Fish plugins"
                     continue
                 end
 
-                if builtin contains $plugin $pinned
+                if ! set -q _flag_force && builtin contains $plugin $pinned
                     echo plug update: $plugin is pinned
                     continue
                 end
@@ -143,6 +149,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 command rm $updated_path
             end
         case pin
+            set plugins $argv[2..-1]
             set installed (_plug_list)
             set pinned (_plug_list --pinned)
 
@@ -164,6 +171,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 command touch $pinned_path
             end
         case unpin
+            set plugins $argv[2..-1]
             set installed (_plug_list)
             set unpinned (_plug_list --unpinned)
 

@@ -70,6 +70,7 @@ Disable specified plugins.
 Update specified plugins.
 
 - If no plugin is specified, all unpinned plugins will be updated.
+- `--force` / `-f` will force update pinned plugins.
 
 ### `plug pin <plugins>`
 
