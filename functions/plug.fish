@@ -62,6 +62,8 @@ function plug -a cmd -d "Manage Fish plugins"
                 _plug_uninstall $plugin
             end
 
+            _plug_prompt
+
             for author in $plug_path/*
                 set author_plugins $author/*
 
@@ -70,14 +72,10 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
             end
 
-            _plug_prompt
-
             if ! builtin functions -q plug
                 command rm -d $plug_path
                 set -e plug_path
-
-                set functions install uninstall list enable disable update prompt
-                builtin functions -e _plug_$functions
+                builtin functions -e _plug_{install,uninstall,list,enable,disable,update,prompt}
             end
         case list ls
             _plug_list $argv
@@ -233,27 +231,12 @@ function _plug_list
             set -a states (string replace $states_path/ "" $state)
         end
 
-        if set -q _flag_enabled && builtin contains disabled $states
-            continue
-        end
-
-        if set -q _flag_disabled && ! builtin contains disabled $states
-            continue
-        end
-
-        if set -q _flag_pinned && ! builtin contains pinned $states
-            continue
-        end
-
-        if set -q _flag_unpinned && builtin contains pinned $states
-            continue
-        end
-
-        if set -q _flag_installed && ! builtin contains installed $states
-            continue
-        end
-
-        if set -q _flag_updated && ! builtin contains updated $states
+        if set -q _flag_enabled && builtin contains disabled $states;
+            or set -q _flag_disabled && ! builtin contains disabled $states;
+            or set -q _flag_pinned && ! builtin contains pinned $states;
+            or set -q _flag_unpinned && builtin contains pinned $states;
+            or set -q _flag_installed && ! builtin contains installed $states;
+            or set -q _flag_updated && ! builtin contains updated $states
             continue
         end
 
