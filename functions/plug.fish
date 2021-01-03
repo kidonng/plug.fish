@@ -301,11 +301,13 @@ function _plug_enable -a plugin event
         command ln -si $file (string replace $plugin_path $__fish_config_dir $file)
     end
 
-    for file in $conf_path/*.fish
+    for file in {$func_path,$conf_path}/*.fish
         builtin source $file
+    end
 
+    for file in $conf_path/*.fish
         if test -n "$event"
-            builtin emit (string replace -r "$conf_path/(\w+)\.fish" "\$1_$event" $file)
+            builtin emit (string replace -ra '^.*/|\.fish$' '' $file)_$event
         end
     end
 
@@ -328,12 +330,12 @@ function _plug_disable -a plugin event
 
     for file in $conf_path/*.fish
         if test -n "$event"
-            builtin emit (string replace -r "$conf_path/(\w+)\.fish" "\$1_$event" $file)
+            builtin emit (string replace -ra '^.*/|\.fish$' '' $file)_$event
         end
     end
 
     for file in $func_path/*.fish
-        builtin functions -e (string replace -r "$func_path/(\w+)\.fish" '$1' $file)
+        builtin functions -e (string replace -ra '^.*/|\.fish$' '' $file)
     end
 
     for file in {$comp_path,$conf_path,$func_path}/*.fish

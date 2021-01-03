@@ -86,20 +86,37 @@ Unpin previously pinned plugins.
 
 ## Advanced
 
-### `$plug_path`
+### Change `$plug_path`
 
-Fish plug stores plugins in `$plug_path`, which is `$__fish_user_data_dir/plug` by default. This can be changed before or after installation.
+Fish plug stores plugins in `$plug_path`, which is `$__fish_user_data_dir/plug` by default.
+
+This can be changed before installation:
+
+```sh
+set -U plug_path ~/.fish-plug
+# Install Fish plug
+```
+
+Or after installation:
+
+```sh
+set enabled_plugins (plug list --enabled)
+plug disable $enabled_plugins
+set new_plug_path ~/.fish-plug
+mv $plug_path $new_plug_path
+set -U plug_path $new_plug_path
+_plug_enable $enabled_plugins
+```
 
 ### Reload a plugin
 
-If you have made changes to a plugin in `$plug_path`, you can reload it by `plug disable`, then `plug enable`.
+If you have made changes to a plugin, you can reload it by `plug disable <plugin>`, then `plug enable <plugin>`.
 
-### Accessing on-`.fish` files
+### Accessing non-`.fish` files
 
 Unlike Fisher, Fish plug doesn't copy non-`.fish` files in `functions`, `conf.d` and `completions`. However, you can access these files via `$plug_path`.
 
 ## Roadmap
 
-- `plug enable --reload`
 - Install a specific version of plugin
 - Capture environment variable changes when disabling plugins for recovering
