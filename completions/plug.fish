@@ -9,6 +9,7 @@ complete -c plug -x -n "__fish_seen_subcommand_from list ls" -s e -l enabled -d 
 complete -c plug -x -n "__fish_seen_subcommand_from list ls" -s d -l disabled -d "List disabled plugins"
 complete -c plug -x -n "__fish_seen_subcommand_from list ls" -s p -l pinned -d "List pinned plugins"
 complete -c plug -x -n "__fish_seen_subcommand_from list ls" -s u -l unpinned -d "List unpinned plugins"
+complete -c plug -x -n "__fish_seen_subcommand_from list ls" -s s -l source -d "Show plugin source"
 complete -c plug -x -n "__fish_seen_subcommand_from list ls" -s v -l verbose -d "Show plugin version and state"
 
 complete -c plug -x -n "__fish_seen_subcommand_from enable" -a "(_plug_list --disabled)"

@@ -234,9 +234,10 @@ end
 function _plug_list
     # TODO: Remove placeholder short flags after Fish 3.2
     # https://github.com/fish-shell/fish-shell/pull/7585
-    argparse -n "plug list" e/enabled d/disabled p/pinned u/unpinned v/verbose 1/installed 2/updated -- $argv || return
+    argparse -n "plug list" e/enabled d/disabled p/pinned u/unpinned s/source v/verbose 1/installed 2/updated -- $argv || return
 
     for plugin_path in $plug_path/*/*
+        set plugin (string split / $plugin_path)[-2..-1]
         set states_path $plugin_path/.git/fish-plug
         set states
 
@@ -253,13 +254,25 @@ function _plug_list
             continue
         end
 
-        set info (string join / (string split / $plugin_path)[-2..-1])
+        if set -q _flag_source || set -q _flag_verbose
+            set source (realpath $plugin_path | string replace $HOME "~")
+        end
+
+        if set -q _flag_source
+            if test $plugin[1] = local
+                set info $source
+            else
+                set info (command git -C $plugin_path remote get-url origin)
+            end
+        else
+            set info (string join / $plugin)
+        end
 
         if set -q _flag_verbose
-            if test -e $plugin_path/.git/HEAD
-                set -a info @(command git -C $plugin_path rev-parse --short HEAD)
+            if test $plugin[1] = local
+                set -a info "->" $source
             else
-                set -a info "->" (realpath $plugin_path | string replace $HOME "~")
+                set -a info @(command git -C $plugin_path rev-parse --short HEAD)
             end
 
             if builtin contains disabled $states
