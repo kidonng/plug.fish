@@ -112,10 +112,6 @@ _plug_enable $enabled_plugins
 
 If you have made changes to a plugin, you can reload it by `plug disable <plugin>`, then `plug enable <plugin>`.
 
-### Accessing non-`.fish` files
-
-Unlike Fisher, Fish plug doesn't copy non-`.fish` files in `functions`, `conf.d` and `completions`. However, you can access these files via `$plug_path`.
-
 ## Roadmap
 
 - Install a specific version of plugin

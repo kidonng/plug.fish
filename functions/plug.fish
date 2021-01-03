@@ -297,7 +297,7 @@ function _plug_enable -a plugin event
     set func_path $plugin_path/functions
     set states_path $plugin_path/.git/fish-plug
 
-    for file in {$comp_path,$conf_path,$func_path}/*.fish
+    for file in {$comp_path,$conf_path,$func_path}/*
         command ln -si $file (string replace $plugin_path $__fish_config_dir $file)
     end
 
@@ -338,7 +338,7 @@ function _plug_disable -a plugin event
         builtin functions -e (string replace -ra '^.*/|\.fish$' '' $file)
     end
 
-    for file in {$comp_path,$conf_path,$func_path}/*.fish
+    for file in {$comp_path,$conf_path,$func_path}/*
         command rm (string replace $plugin_path $__fish_config_dir $file)
     end
 
