@@ -80,6 +80,8 @@ Update specified plugins.
 
 Pin plugins. Pinned plugins won't be updated.
 
+- Local plugins are automatically pinned upon installing.
+
 ### `plug unpin <plugins>`
 
 Unpin previously pinned plugins.

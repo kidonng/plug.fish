@@ -51,6 +51,7 @@ function plug -a cmd -d "Manage Fish plugins"
             end
         case uninstall rm
             set installed (_plug_list)
+            set disabled (_plug_list --disabled)
 
             for plugin in $argv[2..-1]
                 if ! builtin contains $plugin $installed
@@ -58,7 +59,10 @@ function plug -a cmd -d "Manage Fish plugins"
                     continue
                 end
 
-                _plug_disable $plugin uninstall
+                if ! builtin contains $plugin $disabled
+                    _plug_disable $plugin uninstall
+                end
+
                 _plug_uninstall $plugin
             end
 
@@ -120,6 +124,7 @@ function plug -a cmd -d "Manage Fish plugins"
 
             set -q argv[2] || set -a argv (_plug_list --unpinned)
             set installed (_plug_list)
+            set disabled (_plug_list --disabled)
             set pinned (_plug_list --pinned)
             set plug_update (builtin functions _plug_update | string collect)
 
@@ -142,9 +147,15 @@ function plug -a cmd -d "Manage Fish plugins"
             for plugin in (_plug_list --updated)
                 set plugin_path $plug_path/$plugin
 
-                _plug_disable $plugin
+                if ! builtin contains $plugin $disabled
+                    _plug_disable $plugin
+                end
+
                 command git -C $plugin_path rebase -q FETCH_HEAD
-                _plug_enable $plugin update
+
+                if ! builtin contains $plugin $disabled
+                    _plug_enable $plugin update
+                end
             end
         case pin
             set installed (_plug_list)
