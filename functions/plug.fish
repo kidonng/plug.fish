@@ -6,7 +6,7 @@ function plug -a cmd -d "Manage Fish plugins"
         case "" -h --help
             echo "Usage: plug install    <plugins>"
             echo "       plug uninstall  <plugins>"
-            echo "       plug list       [-e | -d]"
+            echo "       plug list       [-edpuv]"
             echo "       plug enable     <plugins>"
             echo "       plug disable    <plugins>"
             echo "       plug update     [plugins]"
@@ -15,10 +15,9 @@ function plug -a cmd -d "Manage Fish plugins"
             echo "Options:"
             echo "       -h, --help    Show help message"
         case install add
-            set plugins $argv[2..-1]
             set installed (_plug_list)
 
-            for raw in $plugins
+            for raw in $argv[2..-1]
                 if test -e $raw
                     set remote (realpath $raw)
                     set plugin local/(string split / $remote)[-1]
@@ -55,10 +54,9 @@ function plug -a cmd -d "Manage Fish plugins"
                 command rm $updated_path
             end
         case uninstall rm
-            set plugins $argv[2..-1]
             set installed (_plug_list)
 
-            for plugin in $plugins
+            for plugin in $argv[2..-1]
                 if ! builtin contains $plugin $installed
                     echo plug uninstall: $plugin is not installed
                     continue
@@ -88,11 +86,10 @@ function plug -a cmd -d "Manage Fish plugins"
         case list ls
             _plug_list $argv
         case enable
-            set plugins $argv[2..-1]
             set installed (_plug_list)
             set enabled (_plug_list --enabled)
 
-            for plugin in $plugins
+            for plugin in $argv[2..-1]
                 if ! builtin contains $plugin $installed
                     echo plug enable: $plugin is not installed
                     continue
@@ -106,11 +103,10 @@ function plug -a cmd -d "Manage Fish plugins"
                 _plug_enable $plugin install
             end
         case disable
-            set plugins $argv[2..-1]
             set installed (_plug_list)
             set disabled (_plug_list --disabled)
 
-            for plugin in $plugins
+            for plugin in $argv[2..-1]
                 if ! builtin contains $plugin $installed
                     echo plug disable: $plugin is not installed
                     continue
@@ -129,11 +125,10 @@ function plug -a cmd -d "Manage Fish plugins"
             argparse -n "plug update" f/force -- $argv || return
 
             set -q argv[2] || set -a argv (_plug_list --unpinned)
-            set plugins $argv[2..-1]
             set installed (_plug_list)
             set pinned (_plug_list --pinned)
 
-            for plugin in $plugins
+            for plugin in $argv[2..-1]
                 if ! builtin contains $plugin $installed
                     echo plug update: $plugin is not installed
                     continue
@@ -160,11 +155,10 @@ function plug -a cmd -d "Manage Fish plugins"
                 command rm $updated_path
             end
         case pin
-            set plugins $argv[2..-1]
             set installed (_plug_list)
             set pinned (_plug_list --pinned)
 
-            for plugin in $plugins
+            for plugin in $argv[2..-1]
                 if ! builtin contains $plugin $installed
                     echo plug pin: $plugin is not installed
                     continue
@@ -175,6 +169,8 @@ function plug -a cmd -d "Manage Fish plugins"
                     continue
                 end
 
+                echo plug: pinning $plugin
+
                 set plugin_path $plug_path/$plugin
                 set states_path $plugin_path/.git/fish-plug
                 set pinned_path $states_path/pinned
@@ -182,11 +178,10 @@ function plug -a cmd -d "Manage Fish plugins"
                 command touch $pinned_path
             end
         case unpin
-            set plugins $argv[2..-1]
             set installed (_plug_list)
             set unpinned (_plug_list --unpinned)
 
-            for plugin in $plugins
+            for plugin in $argv[2..-1]
                 if ! builtin contains $plugin $installed
                     echo plug unpin: $plugin is not installed
                     continue
@@ -196,6 +191,8 @@ function plug -a cmd -d "Manage Fish plugins"
                     echo plug unpin: $plugin is already unpinned
                     continue
                 end
+
+                echo plug: unpinning $plugin
 
                 set plugin_path $plug_path/$plugin
                 set states_path $plugin_path/.git/fish-plug
@@ -210,7 +207,7 @@ function plug -a cmd -d "Manage Fish plugins"
 end
 
 function _plug_install -a plugin remote
-    echo plug install: installing $plugin "(from $remote)"
+    echo plug: installing $plugin "(from $remote)"
 
     set plugin_path $plug_path/$plugin
     set states_path $plugin_path/.git/fish-plug
@@ -221,7 +218,7 @@ function _plug_install -a plugin remote
 end
 
 function _plug_uninstall -a plugin
-    echo plug uninstall: uninstalling $plugin
+    echo plug: uninstalling $plugin
 
     set plugin_path $plug_path/$plugin
 
@@ -280,7 +277,7 @@ function _plug_list
 end
 
 function _plug_enable -a plugin event
-    echo plug enable: enabling $plugin
+    echo plug: enabling $plugin
 
     set plugin_path $plug_path/$plugin
     set comp_path $plugin_path/completions
@@ -288,37 +285,24 @@ function _plug_enable -a plugin event
     set func_path $plugin_path/functions
     set states_path $plugin_path/.git/fish-plug
     set disabled_path $states_path/disabled
-    set link_files
 
-    for file in $func_path/*.fish
-        set -a link_files $file
-        builtin source $file
-    end
-
-    for file in $conf_path/*.fish
-        set -a link_files $file
-        builtin source $file
-
-        if test -n "$event"
-            builtin emit (string replace -r "$conf_path/(\w+)\.fish" "\$1_$event" $file)
-        end
-    end
-
-    for file in $comp_path/*.fish
-        set -a link_files $file
-    end
-
-    for file in $link_files
+    for file in {$comp_path,$conf_path,$func_path}/*.fish
         command ln -si $file (string replace $plugin_path $__fish_config_dir $file)
     end
 
-    if test -e $disabled_path
-        command rm $disabled_path
+    for file in $conf_path/*.fish
+        builtin source $file
+
+        if test -n "$event"
+            builtin emit (string replace -r "$conf_path/(\w+)\.fish" "\$1_$event" $file)
+        end
     end
+
+    test -e $disabled_path && command rm $disabled_path
 end
 
 function _plug_disable -a plugin event
-    echo plug disable: disabling $plugin
+    echo plug: disabling $plugin
 
     set plugin_path $plug_path/$plugin
     set comp_path $plugin_path/completions
@@ -326,26 +310,18 @@ function _plug_disable -a plugin event
     set func_path $plugin_path/functions
     set states_path $plugin_path/.git/fish-plug
     set disabled_path $states_path/disabled
-    set unlink_files
 
     for file in $conf_path/*.fish
-        set -a unlink_files $file
-
         if test -n "$event"
             builtin emit (string replace -r "$conf_path/(\w+)\.fish" "\$1_$event" $file)
         end
     end
 
     for file in $func_path/*.fish
-        set -a unlink_files $file
         builtin functions -e (string replace -r "$func_path/(\w+)\.fish" '$1' $file)
     end
 
-    for file in $comp_path/*.fish
-        set -a unlink_files $file
-    end
-
-    for file in $unlink_files
+    for file in {$comp_path,$conf_path,$func_path}/*.fish
         command rm (string replace $plugin_path $__fish_config_dir $file)
     end
 
@@ -353,7 +329,7 @@ function _plug_disable -a plugin event
 end
 
 function _plug_update -a plugin
-    echo plug update: updating $plugin
+    echo plug: updating $plugin
 
     set plugin_path $plug_path/$plugin
     set states_path $plugin_path/.git/fish-plug
@@ -364,7 +340,7 @@ function _plug_update -a plugin
     set origin (command git -C $plugin_path rev-parse FETCH_HEAD)
 
     if test $local != $origin
-        echo plug update: updated $plugin to (string sub -l 7 $origin) "(from "(string sub -l 7 $local)")"
+        echo plug: updated $plugin to (string sub -l 7 $origin) "(from "(string sub -l 7 $local)")"
         command touch $updated_path
     end
 end
