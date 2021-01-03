@@ -203,11 +203,24 @@ function _plug_install -a plugin remote
 
     set plugin_path $plug_path/$plugin
     set states_path $plugin_path/.git/fish-plug
-    set installed_path $states_path/installed
+    string match -q "local/*" $plugin && set local
 
-    command git clone -q $remote $plugin_path
+    if set -q local
+        set local_path $plug_path/local
+
+        if ! test -e $local_path
+            command mkdir -p $local_path
+        end
+
+        command ln -s $remote $plugin_path
+    else
+        command git clone -q $remote $plugin_path
+    end
+
     command mkdir -p $states_path
-    command touch $installed_path
+    set states installed
+    set -q local && set -a states pinned
+    command touch $states_path/$states
 end
 
 function _plug_uninstall -a plugin
@@ -243,8 +256,10 @@ function _plug_list
         set info (string join / (string split / $plugin_path)[-2..-1])
 
         if set -q _flag_verbose
-            if test (command git -C $plugin_path rev-parse --is-inside-work-tree) = true
+            if test -e $plugin_path/.git/HEAD
                 set -a info @(command git -C $plugin_path rev-parse --short HEAD)
+            else
+                set -a info "->" (realpath $plugin_path | string replace $HOME "~")
             end
 
             if builtin contains disabled $states

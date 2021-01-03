@@ -24,7 +24,7 @@ Install specified plugins.
 ```sh
 # From GitHub
 plug install ilancosman/tide jorgebucaran/spark.fish
-# From local Git repository
+# From a local directory
 plug install ~/my-plugin
 # From any Git remote
 plug install git@github.com:franciscolourenco/done.git
@@ -32,7 +32,7 @@ plug install git@github.com:franciscolourenco/done.git
 
 Fish plug uses the familiar `<author>/<name>` format for referencing plugins.
 
-- When installing a plugin from local, it will be installed as `local/<directory>`.
+- When installing a plugin from local, it will be installed as `local/<directory>` as a symbolic link.
 
   In the example above, `~/my-plugin` will be installed as `local/my-plugin`.
 
@@ -58,6 +58,7 @@ List plugins, applying specified filter.
 Enable specified plugins.
 
 - This command is automatically executed during `plug install` (after cloning a plugin).
+- Under the hood, Fish plug creates symbolic links for plugin files. This means changes of existing completions and functions in `$plug_path` are reflected in Fish without reloading.
 
 ### `plug disable <plugins>`
 
@@ -89,13 +90,6 @@ Fish plug stores plugins in `$plug_path`, which is `$__fish_user_data_dir/plug` 
 ### Reload a plugin
 
 If you have made changes to a plugin in `$plug_path`, you can reload it by `plug disable`, then `plug enable`.
-
-### Soft links
-
-Fish plug uses soft links (`ln -s`) instead of copying. This has several benefits:
-
-- Changes in `$plug_path` are reflected in Fish without reloading, convenient for manual editing and Git checkout
-- Easier to differentiate with files not managed by Fish plug
 
 ### Accessing on-`.fish` files
 
