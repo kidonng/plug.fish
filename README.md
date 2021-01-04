@@ -4,16 +4,24 @@ Git-based [Fish](https://fishshell.com/) plugin manager.
 
 > Fish plug is heavily infulenced by [Fisher](https://github.com/jorgebucaran/fisher). If you want a minimal alternative, check it out.
 
-- Install, list, update and uninstall plugins, with concurrent cloning/fetching
-- Disable and enable plugins
-- Support [Fisher plugin](https://github.com/jorgebucaran/fisher#creating-a-plugin), including [event system](https://github.com/jorgebucaran/fisher#event-system)
+- Manage plugins with concurrent updating and shell completions
+- Beyond CRUD: disable a plugin or pin a plugin's update
+- [Fisher plugin](https://github.com/jorgebucaran/fisher#creating-a-plugin) support, including [event system](https://github.com/jorgebucaran/fisher#event-system)
 - Fully based on Git and file system, simple yet hackable
 
 ## Installation
 
-```sh
-curl -sSL https://git.io/fish-plug | source && plug install kidonng/fish-plug
-```
+- Use Fish plug
+
+  ```sh
+  curl -sSL https://git.io/fish-plug | source && plug install kidonng/fish-plug
+  ```
+
+- Use Fisher
+
+  ```sh
+  fisher install kidonng/fish-plug
+  ```
 
 ## Usage
 
@@ -53,8 +61,8 @@ List plugins, using specified options.
 - `--disabled` / `-d` lists disabled plugins.
 - `--pinned` / `-p` lists pinned plugins.
 - `--unpinned` / `-u` lists unpinned plugins.
-- `--source` / `-s` lists plugin's source (Git remote URL or local path). Useful for exporting a plugin list.
-- `--verbose` / `-v` show plugin version (`git rev-parse --short`) and state (enabled/disabled)
+- `--source` / `-s` lists each plugin's source (Git remote URL or local path). Useful for exporting a list of plugins.
+- `--verbose` / `-v` shows plugin version (via `git rev-parse --short`) and states (disabled/pinned).
 
 ### `plug enable <plugins>`
 
@@ -113,6 +121,23 @@ _plug_enable $enabled_plugins
 ### Reload a plugin
 
 If you have made changes to a plugin, you can reload it by `plug disable <plugin>`, then `plug enable <plugin>`.
+
+### Migrating from Fisher
+
+The biggest differences between Fish plug and Fisher are Git based installation and absence of `fish_plugins`, the latter can be simulated with `plug list --source`.
+
+Fish plug should be able to directly install plugins from a `fish_plugins` file:
+
+```sh
+# Save fish_plugins to somewhere else, and uninstall Fisher
+plug install </path/to/fish_plugins
+```
+
+### Fisher and Oh My Fish compatibility
+
+Fish plug should provide the same compatibility as Fisher, except that Fish plug will ignore `.fish` files in directory root.
+
+A compatibility plugin is being planned. For the time being, you can keep using Fisher for incompatible plugins (did we mention you can install Fisher with Fish plug?).
 
 ## Roadmap
 

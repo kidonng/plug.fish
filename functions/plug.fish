@@ -1,5 +1,6 @@
 function plug -a cmd -d "Manage Fish plugins"
     test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
+    isatty || read -az stdin && set -a argv $stdin
 
     switch "$cmd"
         case "" -h --help
