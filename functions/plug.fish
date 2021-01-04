@@ -5,7 +5,7 @@ function plug -a cmd -d "Manage Fish plugins"
         case "" -h --help
             echo "Usage: plug install    <plugins>"
             echo "       plug uninstall  <plugins>"
-            echo "       plug list       [-edpuv]"
+            echo "       plug list       [options]"
             echo "       plug enable     <plugins>"
             echo "       plug disable    <plugins>"
             echo "       plug update     [plugins]"

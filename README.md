@@ -44,11 +44,11 @@ Fish plug uses the familiar `<author>/<name>` format for referencing plugins.
 
 Uninstall specified plugins.
 
-### `plug list/ls [filter]`
+### `plug list/ls [options]`
 
-List plugins, applying specified filter.
+List plugins, using specified options.
 
-- If no filter is specified, all installed plugins will be listed.
+- If no option is specified, all installed plugins will be listed.
 - `--enabled` / `-e` lists enabled plugins.
 - `--disabled` / `-d` lists disabled plugins.
 - `--pinned` / `-p` lists pinned plugins.
