@@ -19,12 +19,12 @@ function plug -a cmd -d "Manage Fish plugins"
             set plug_install (builtin functions _plug_install | string collect)
 
             for raw in $argv[2..-1]
-                if test -e $raw
-                    set remote (realpath $raw)
-                    set plugin local/(string split / $remote)[-1]
-                else if string match -rq '^[\w.-]+/[\w.-]+$' $raw
+                if string match -rq '^[\w.-]+/[\w.-]+$' $raw
                     set remote https://github.com/$raw
                     set plugin $raw
+                else if test -e $raw
+                    set remote (realpath $raw)
+                    set plugin local/(string split / $remote)[-1]
                 else
                     set remote $raw
                     set plugin (string match -r '([\w.-]+/[\w.-]+?)(?:\.git|/)?$' $raw)[2]
