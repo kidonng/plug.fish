@@ -141,5 +141,7 @@ A compatibility plugin is being planned. For the time being, you can keep using 
 
 ## Roadmap
 
+- Error handling
+- Better output (with color/emojies)
 - Install a specific version of plugin
 - Capture environment variable changes when disabling plugins for recovering
