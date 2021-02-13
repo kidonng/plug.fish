@@ -8,12 +8,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install Fish
-        run: |
-          sudo apt-add-repository -yn ppa:fish-shell/release-3
-          sudo apt update
-          sudo apt install -y fish
-
+      - uses: fish-actions/install-fish@v1.1.0
       - name: Run tests
         run: |
           for test in tests/*.fish
