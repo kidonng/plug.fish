@@ -198,7 +198,6 @@ function _plug_install -a plugin remote
     set plugin_path $plug_path/$plugin
     set states_path $plugin_path/.git/fish-plug
     set states installed disabled
-    set -l git_clone_depth 1
 
     if string match -q "local/*" $plugin
         set local_path $plug_path/local
@@ -211,7 +210,7 @@ function _plug_install -a plugin remote
 
         set -a states pinned
     else
-        command git clone --depth $git_clone_depth -q $remote $plugin_path
+        command git clone --depth 1 -q $remote $plugin_path
     end
 
     command mkdir -p $states_path
