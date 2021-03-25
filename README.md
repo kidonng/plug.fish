@@ -84,13 +84,10 @@ Disable specified plugins.
 Update specified plugins.
 
 - If no plugin is specified, all unpinned plugins will be updated.
-- `--force` / `-f` will force update pinned plugins.
 
 ### `plug pin <plugins>`
 
 Pin plugins. Pinned plugins won't be updated.
-
-- Local plugins are automatically pinned upon installing.
 
 ### `plug unpin <plugins>`
 
