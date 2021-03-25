@@ -210,7 +210,7 @@ function _plug_install -a plugin remote
 
         set -a states pinned
     else
-        command git clone -q $remote $plugin_path
+        command git clone --depth 1 -q $remote $plugin_path
     end
 
     command mkdir -p $states_path
