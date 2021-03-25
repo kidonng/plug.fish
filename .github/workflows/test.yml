@@ -4,7 +4,10 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -16,3 +19,18 @@ jobs:
               env HOME=(mktemp -d) fish $test
           end
         shell: fish {0}
+  syntax-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: fish-actions/install-fish@v1.1.0
+      - uses: fish-actions/syntax-check@v1
+
+  format-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: fish-actions/install-fish@v1.1.0
+      - uses: fish-actions/format-check@v1
