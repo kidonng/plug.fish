@@ -11,6 +11,8 @@ Git-based [Fish](https://fishshell.com/) plugin manager.
 
 ## Installation
 
+Fish plug requires Fish >= 3.2.
+
 - Use Fish plug
 
   ```sh

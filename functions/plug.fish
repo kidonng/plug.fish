@@ -24,7 +24,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set installed (_plug_list)
             set plug_install (builtin functions _plug_install | string collect)
 
-            for raw in $argv[2..-1]
+            for raw in $argv[2..]
                 if string match -rq '^[\w.-]+/[\w.-]+$' $raw
                     set remote https://github.com/$raw
                     set plugin $raw
@@ -54,7 +54,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set installed (_plug_list)
             set disabled (_plug_list --disabled)
 
-            for plugin in $argv[2..-1]
+            for plugin in $argv[2..]
                 if ! builtin contains $plugin $installed
                     echo plug uninstall: $plugin is not installed
                     continue
@@ -80,7 +80,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set installed (_plug_list)
             set enabled (_plug_list --enabled)
 
-            for plugin in $argv[2..-1]
+            for plugin in $argv[2..]
                 if ! builtin contains $plugin $installed
                     echo plug enable: $plugin is not installed
                     continue
@@ -97,7 +97,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set installed (_plug_list)
             set disabled (_plug_list --disabled)
 
-            for plugin in $argv[2..-1]
+            for plugin in $argv[2..]
                 if ! builtin contains $plugin $installed
                     echo plug disable: $plugin is not installed
                     continue
@@ -121,7 +121,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set pinned (_plug_list --pinned)
             set plug_update (builtin functions _plug_update | string collect)
 
-            for plugin in $argv[2..-1]
+            for plugin in $argv[2..]
                 if ! builtin contains $plugin $installed
                     echo plug update: $plugin is not installed
                     continue
@@ -152,7 +152,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set installed (_plug_list)
             set pinned (_plug_list --pinned)
 
-            for plugin in $argv[2..-1]
+            for plugin in $argv[2..]
                 if ! builtin contains $plugin $installed
                     echo plug pin: $plugin is not installed
                     continue
@@ -171,7 +171,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set installed (_plug_list)
             set unpinned (_plug_list --unpinned)
 
-            for plugin in $argv[2..-1]
+            for plugin in $argv[2..]
                 if ! builtin contains $plugin $installed
                     echo plug unpin: $plugin is not installed
                     continue
@@ -224,7 +224,7 @@ function _plug_uninstall -a plugin
 
     command rm -rf $plugin_path
 
-    set author (string split / $plugin)[1]
+    set author (string split -f 1 / $plugin)
     set author_path $plug_path/$author
 
     if test (count $author_path/*) = 0
@@ -233,12 +233,10 @@ function _plug_uninstall -a plugin
 end
 
 function _plug_list
-    # TODO: Remove placeholder short flags after Fish 3.2
-    # https://github.com/fish-shell/fish-shell/pull/7585
-    argparse -n "plug list" e/enabled d/disabled p/pinned u/unpinned s/source v/verbose 1/installed 2/updated -- $argv || return
+    argparse -n "plug list" e/enabled d/disabled p/pinned u/unpinned s/source v/verbose installed updated -- $argv || return
 
     for plugin_path in $plug_path/*/*
-        set plugin (string split / $plugin_path)[-2..-1]
+        set plugin (string split / $plugin_path)[-2..]
         set states_path $plugin_path/.git/fish-plug
         set states
 
