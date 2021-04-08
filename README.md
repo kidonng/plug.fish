@@ -126,7 +126,7 @@ If you have made changes to a plugin, you can reload it by `plug disable <plugin
 
 ### Migrating from Fisher
 
-The biggest differences between Fish plug and Fisher are Git based installation and absence of `fish_plugins`, the latter can be simulated with `plug list --source`.
+Fish plug should provide the same compatibility as Fisher. The biggest differences between Fish plug and Fisher are Git based installation and absence of `fish_plugins`, the latter can be simulated with `plug list --source`.
 
 Fish plug should be able to directly install plugins from a `fish_plugins` file:
 
@@ -134,12 +134,6 @@ Fish plug should be able to directly install plugins from a `fish_plugins` file:
 # Save fish_plugins to somewhere else, and uninstall Fisher
 plug install </path/to/fish_plugins
 ```
-
-### Fisher and Oh My Fish compatibility
-
-Fish plug should provide the same compatibility as Fisher, except that Fish plug will ignore `.fish` files in directory root.
-
-A compatibility plugin is being planned. For the time being, you can keep using Fisher for incompatible plugins (did we mention you can install Fisher with Fish plug?).
 
 ## Roadmap
 
