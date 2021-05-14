@@ -1,8 +1,8 @@
-# 🐟🔌 Fish plug
+# 🐟🔌 plug.fish
 
 Git-based [Fish](https://fishshell.com/) plugin manager.
 
-> Fish plug is heavily infulenced by [Fisher](https://github.com/jorgebucaran/fisher). If you want a minimal alternative, check it out.
+> plug.fish is heavily infulenced by [Fisher](https://github.com/jorgebucaran/fisher). If you want a minimal alternative, check it out.
 
 - Manage plugins with concurrent updating and shell completions
 - Beyond CRUD: disable a plugin or pin a plugin's update
@@ -11,9 +11,9 @@ Git-based [Fish](https://fishshell.com/) plugin manager.
 
 ## Installation
 
-Fish plug requires Fish >= 3.2.
+Fish 3.2.0 or above is required.
 
-- Use Fish plug
+- Use plug.fish ✨
 
   ```sh
   curl -sSL https://git.io/fish-plug | source && plug install kidonng/fish-plug
@@ -40,7 +40,7 @@ plug install ~/my-plugin
 plug install git@github.com:franciscolourenco/done.git
 ```
 
-Fish plug uses the familiar `<author>/<name>` format for referencing plugins.
+plug.fish adopts the familiar `<author>/<name>` format for referencing plugins.
 
 - When installing a plugin from local, it will be installed as `local/<directory>` as a symbolic link.
 
@@ -71,7 +71,7 @@ List plugins, using specified options.
 Enable specified plugins.
 
 - This command is automatically executed during `plug install` (after cloning a plugin).
-- Under the hood, Fish plug creates symbolic links for plugin files. This means changes of existing completions and functions in `$plug_path` are reflected in Fish without reloading.
+- Under the hood, plug.fish creates symbolic links for plugin files. This means changes of existing completions and functions in `$plug_path` are reflected in Fish without reloading.
 
 ### `plug disable <plugins>`
 
@@ -100,13 +100,13 @@ Unpin previously pinned plugins.
 
 ### Change `$plug_path`
 
-Fish plug stores plugins in `$plug_path`, which is `$__fish_user_data_dir/plug` by default.
+plug.fish stores plugins in `$plug_path`, which is `$__fish_user_data_dir/plug` by default.
 
 This can be changed before installation:
 
 ```sh
-set -U plug_path ~/.fish-plug
-# Install Fish plug
+set -U plug_path ~/.plug.fish
+# Install plug.fish
 ```
 
 Or after installation:
@@ -126,9 +126,9 @@ If you have made changes to a plugin, you can reload it by `plug disable <plugin
 
 ### Migrating from Fisher
 
-Fish plug should provide the same compatibility as Fisher. The biggest differences between Fish plug and Fisher are Git based installation and absence of `fish_plugins`, the latter can be simulated with `plug list --source`.
+plug.fish should provide the same compatibility as Fisher. The biggest differences between plug.fish and Fisher are Git based installation and absence of `fish_plugins`, the latter can be simulated with `plug list --source`.
 
-Fish plug should be able to directly install plugins from a `fish_plugins` file:
+plug.fish should be able to directly install plugins from a `fish_plugins` file:
 
 ```sh
 # Save fish_plugins to somewhere else, and uninstall Fisher
