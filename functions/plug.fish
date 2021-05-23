@@ -55,6 +55,15 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
             end
         case init
+            argparse s/script -- $argv || return
+
+            if set -q _flag_script
+                printf "%s\n" \
+                    "set -l plug "(string replace $plug_path '$plug_path' (status -f) | string replace ~ "~") \
+                    'test -f $plug && source $plug && plug init'
+                return 0
+            end
+
             if set -q _plug_initialized
                 echo plug: already initialized >&2
                 return 1
