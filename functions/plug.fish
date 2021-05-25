@@ -2,7 +2,8 @@ test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
 set _plug_regex '([^/]+)\.fish$'
 
 function plug -a cmd -d "Manage Fish plugins"
-    set plugins (string match -v -- "-*" $argv[2..])
+    set -l plugins (string match -v -- "-*" $argv[2..])
+    set -l _status 0
 
     switch $cmd
         case "" -h --help
@@ -20,14 +21,14 @@ function plug -a cmd -d "Manage Fish plugins"
         case uninstall rm
         case list ls
             argparse e/enabled d/disabled p/pinned u/unpinned -- $argv || return
-            set -q argv[2] && set filter $argv[2]
+            set -q argv[2] && set -l filter $argv[2]
 
             for author_path in $plug_path/*
-                set author (string replace $plug_path/ "" $author_path)
+                set -l author (string replace $plug_path/ "" $author_path)
 
                 for plugin_path in $author_path/*
-                    set plugin (string replace $author_path/ "" $plugin_path)
-                    set plugin_full $author/$plugin
+                    set -l plugin (string replace $author_path/ "" $plugin_path)
+                    set -l plugin_full $author/$plugin
 
                     if set -q _flag_enabled && ! contains $plugin_full $_plug_enabled
                         or set -q _flag_disabled && contains $plugin_full $_plug_enabled
@@ -38,7 +39,7 @@ function plug -a cmd -d "Manage Fish plugins"
                     end
 
                     if isatty stdout
-                        set plugin_styled $author/(set_color -o)$plugin(set_color normal)
+                        set -l plugin_styled $author/(set_color -o)$plugin(set_color normal)
 
                         if ! contains $plugin_full $_plug_enabled
                             set plugin_styled (set_color -d)$plugin_styled
@@ -86,16 +87,16 @@ function plug -a cmd -d "Manage Fish plugins"
             end
         case enable
             for plugin in $plugins
-                set plugin_path $plug_path/$plugin
+                set -l plugin_path $plug_path/$plugin
 
                 if ! test -d $plugin_path
                     echo plug: (set_color -o)$plugin(set_color normal) does not exist >&2
-                    set _plug_error && continue
+                    set _status 1 && continue
                 end
 
                 if contains $plugin $_plug_enabled
                     echo plug: (set_color -o)$plugin(set_color normal) is already enabled >&2
-                    set _plug_error && continue
+                    set _status 1 && continue
                 end
 
                 for file in $plugin_path/{completions,functions}/*.fish
@@ -112,16 +113,16 @@ function plug -a cmd -d "Manage Fish plugins"
             end
         case disable
             for plugin in $plugins
-                set plugin_path $plug_path/$plugin
+                set -l plugin_path $plug_path/$plugin
 
                 if ! test -d $plugin_path
                     echo plug: (set_color -o)$plugin(set_color normal) does not exist >&2
-                    set _plug_error && continue
+                    set _status 1 && continue
                 end
 
-                if ! set index (contains -i $plugin $_plug_enabled)
+                if ! set -l index (contains -i $plugin $_plug_enabled)
                     echo plug: (set_color -o)$plugin(set_color normal) is already disabled >&2
-                    set _plug_error && continue
+                    set _status 1 && continue
                 end
 
                 for file in $plugin_path/conf.d/*.fish
@@ -142,16 +143,16 @@ function plug -a cmd -d "Manage Fish plugins"
         case update up
         case pin
             for plugin in $plugins
-                set plugin_path $plug_path/$plugin
+                set -l plugin_path $plug_path/$plugin
 
                 if ! test -d $plugin_path
                     echo plug: (set_color -o)$plugin(set_color normal) does not exist >&2
-                    set _plug_error && continue
+                    set _status 1 && continue
                 end
 
-                if ! set index (contains -i $plugin $_plug_unpinned)
+                if ! set -l index (contains -i $plugin $_plug_unpinned)
                     echo plug: (set_color -o)$plugin(set_color normal) is already pinned >&2
-                    set _plug_error && continue
+                    set _status 1 && continue
                 end
 
                 set -e _plug_unpinned[$index]
@@ -159,16 +160,16 @@ function plug -a cmd -d "Manage Fish plugins"
             end
         case unpin
             for plugin in $plugins
-                set plugin_path $plug_path/$plugin
+                set -l plugin_path $plug_path/$plugin
 
                 if ! test -d $plugin_path
                     echo plug: (set_color -o)$plugin(set_color normal) does not exist >&2
-                    set _plug_error && continue
+                    set _status 1 && continue
                 end
 
                 if contains $plugin $_plug_unpinned
                     echo plug: (set_color -o)$plugin(set_color normal) is already unpinned >&2
-                    set _plug_error && continue
+                    set _status 1 && continue
                 end
 
                 set -Ua _plug_unpinned $plugin
@@ -179,7 +180,6 @@ function plug -a cmd -d "Manage Fish plugins"
             return 1
     end
 
-    if set -q _plug_error
-        return 1
-    end
+
+    return $_status
 end
