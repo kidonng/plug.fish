@@ -80,8 +80,6 @@ function plug -a cmd -d "Manage Fish plugins"
             set fish_complete_path $fish_complete_path[1] $complete_path $fish_complete_path[2..]
             set fish_function_path $fish_function_path[1] $function_path $fish_function_path[2..]
 
-            status -i || return 0
-
             for file in $plug_path/$_plug_enabled/conf.d/*.fish
                 source $file
             end
