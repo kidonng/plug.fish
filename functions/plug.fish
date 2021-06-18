@@ -1,8 +1,8 @@
 test -z "$plug_path" && set -U plug_path $__fish_user_data_dir/plug
-set _plug_regex '([^/]+)\.fish$'
 
 function plug -a cmd -d "Manage Fish plugins"
     set -l plugins (string match -v -- "-*" $argv[2..])
+    set -l regex '([^/]+)\.fish$'
     set -l _status 0
 
     switch $cmd
@@ -105,7 +105,7 @@ function plug -a cmd -d "Manage Fish plugins"
 
                 for file in $plugin_path/conf.d/*.fish
                     source $file
-                    emit (string match -r $_plug_regex $file)[2]_install
+                    emit (string match -r $regex $file)[2]_install
                 end
 
                 set -Ua _plug_enabled $plugin
@@ -126,15 +126,15 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
 
                 for file in $plugin_path/conf.d/*.fish
-                    emit (string match -r $_plug_regex $file)[2]_uninstall
+                    emit (string match -r $regex $file)[2]_uninstall
                 end
 
                 for file in $plugin_path/functions/*.fish
-                    functions -e (string match -r $_plug_regex $file)[2]
+                    functions -e (string match -r $regex $file)[2]
                 end
 
                 for file in $plugin_path/completions/*.fish
-                    complete -e (string match -r $_plug_regex $file)[2]
+                    complete -e (string match -r $regex $file)[2]
                 end
 
                 set -e _plug_enabled[$index]
