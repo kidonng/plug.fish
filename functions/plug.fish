@@ -21,7 +21,6 @@ function plug -a cmd -d "Manage Fish plugins"
         case uninstall rm
         case list ls
             argparse e/enabled d/disabled p/pinned u/unpinned -- $argv || return
-            set -q argv[2] && set -l filter $argv[2]
 
             for author_path in $plug_path/*
                 set -l author (string replace $plug_path/ "" $author_path)
@@ -34,7 +33,7 @@ function plug -a cmd -d "Manage Fish plugins"
                         or set -q _flag_disabled && contains $plugin_full $_plug_enabled
                         or set -q _flag_pinned && contains $plugin_full $_plug_unpinned
                         or set -q _flag_unpinned && ! contains $plugin_full $_plug_unpinned
-                        or set -q filter && ! string match -rq $filter $plugin_full
+                        or set -q plugins[1] && ! contains $plugin_full $plugins
                         continue
                     end
 
@@ -52,6 +51,17 @@ function plug -a cmd -d "Manage Fish plugins"
                         echo $plugin_styled
                     else
                         echo $author/$plugin
+                    end
+
+                    if set -q plugins[1]
+                        for dir in completions conf.d functions
+                            set -l dir_path $plugin_path/$dir
+                            set -l files $dir_path/*.fish
+
+                            if test (count $files) -gt 0
+                                string replace -- $dir_path (set_color -o)$dir(set_color normal) \t$files
+                            end
+                        end
                     end
                 end
             end
