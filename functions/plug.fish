@@ -72,9 +72,16 @@ function plug -a cmd -d "Manage Fish plugins"
             end
 
             set -g _plug_initialized
+            test -z "$plug_enabled" && return
 
-            set fish_complete_path $fish_complete_path[1] $plug_path/$plug_enabled/completions $fish_complete_path[2..]
-            set fish_function_path $fish_function_path[1] $plug_path/$plug_enabled/functions $fish_function_path[2..]
+            set -gq plug_enabled && set -g --path plug_enabled $plug_enabled
+
+            set fish_complete_path $fish_complete_path[1] \
+                $plug_path/$plug_enabled/completions \
+                $fish_complete_path[2..]
+            set fish_function_path $fish_function_path[1] \
+                $plug_path/$plug_enabled/functions \
+                $fish_function_path[2..]
 
             for file in $plug_path/$plug_enabled/conf.d/*.fish
                 if ! test -f (string replace -r "^.*/" $__fish_config_dir/conf.d/ -- $file)
@@ -104,7 +111,7 @@ function plug -a cmd -d "Manage Fish plugins"
                     emit (string match -r $regex $file)[2]_install
                 end
 
-                set -Ua plug_enabled $plugin
+                set -Ua --path plug_enabled $plugin
                 echo plug: (set_color -o)$plugin(set_color normal) enabled
             end
         case disable
