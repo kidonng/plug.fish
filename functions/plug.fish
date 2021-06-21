@@ -80,8 +80,8 @@ function plug -a cmd -d "Manage Fish plugins"
 
                     if set -q _flag_enabled && ! contains $plugin_full $plug_enabled
                         or set -q _flag_disabled && contains $plugin_full $plug_enabled
-                        or set -q _flag_pinned && contains $plugin_full $plug_unpinned
-                        or set -q _flag_unpinned && ! contains $plugin_full $plug_unpinned
+                        or set -q _flag_pinned && ! contains $plugin_full $plug_pinned
+                        or set -q _flag_unpinned && contains $plugin_full $plug_pinned
                         or set -q plugins[1] && ! contains $plugin_full $plugins
                         continue
                     end
@@ -93,7 +93,7 @@ function plug -a cmd -d "Manage Fish plugins"
                             set plugin_styled (set_color -d)$plugin_styled
                         end
 
-                        if ! contains $plugin_full $plug_unpinned
+                        if contains $plugin_full $plug_pinned
                             set plugin_styled (set_color -u)$plugin_styled
                         end
 
@@ -202,12 +202,12 @@ function plug -a cmd -d "Manage Fish plugins"
                     set _status 1 && continue
                 end
 
-                if ! set -l index (contains -i $plugin $plug_unpinned)
+                if contains $plugin $plug_pinned
                     echo plug: (set_color -o)$plugin(set_color normal) is already pinned >&2
                     set _status 1 && continue
                 end
 
-                set -e plug_unpinned[$index]
+                set -Ua plug_pinned $plugin
                 echo plug: (set_color -o)$plugin(set_color normal) pinned
             end
         case unpin
@@ -219,12 +219,12 @@ function plug -a cmd -d "Manage Fish plugins"
                     set _status 1 && continue
                 end
 
-                if contains $plugin $plug_unpinned
+                if ! set -l index (contains -i $plugin $plug_pinned)
                     echo plug: (set_color -o)$plugin(set_color normal) is already unpinned >&2
                     set _status 1 && continue
                 end
 
-                set -Ua plug_unpinned $plugin
+                set -e plug_pinned[$index]
                 echo plug: (set_color -o)$plugin(set_color normal) unpinned
             end
         case "*"
