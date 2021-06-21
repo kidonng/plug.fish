@@ -18,9 +18,9 @@ function plug -a cmd -d "Manage Fish plugins"
                 "       plug "(set_color -o)"pin"(set_color normal)"        <plugins>" \
                 "       plug "(set_color -o)"unpin"(set_color normal)"      <plugins>"
         case install add
-            test -z "$PLUG_GIT" && set -lx PLUG_GIT --depth 1 -q
-            test -z "$PLUG_REMOTE" && set -lx PLUG_REMOTE https://github.com/
-            set -lx PLUG_TMP (mktemp)
+            test -z "$PLUG_GIT" && set -l PLUG_GIT --depth 1 -q
+            test -z "$PLUG_REMOTE" && set -l PLUG_REMOTE https://github.com/
+            set -l tmp (mktemp)
             set -l pid
 
             for plugin in $plugins
@@ -30,13 +30,13 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
 
                 fish -c "
-                    echo plug: cloning (set_color -o)$plugin(set_color normal)
+                    echo plug: cloning $PLUG_REMOTE(set_color -o)$plugin(set_color normal)
 
                     if git clone $PLUG_GIT $PLUG_REMOTE$plugin $plug_path/$plugin
-                        echo plug enable $plugin >> $PLUG_TMP
+                        echo plug enable $plugin >> $tmp
                     else
                         echo plug: failed to install (set_color -o)$plugin(set_color normal) >&2
-                        echo set _status 1 >> $PLUG_TMP
+                        echo set _status 1 >> $tmp
                     end
                 " &
 
@@ -44,8 +44,8 @@ function plug -a cmd -d "Manage Fish plugins"
             end
 
             wait $pid
-            source $PLUG_TMP
-            rm $PLUG_TMP
+            source $tmp
+            rm $tmp
         case uninstall rm
             for plugin in $plugins
                 if ! test -d $plug_path/$plugin
@@ -58,8 +58,8 @@ function plug -a cmd -d "Manage Fish plugins"
                     set _status 1 && continue
                 end
 
-                echo plug: uninstalling (set_color -o)$plugin(set_color normal)
                 rm -rf $plug_path/$plugin
+                echo plug: uninstalled (set_color -o)$plugin(set_color normal)
             end
 
             if ! functions -q plug && test (count $plug_path/*) = 0
@@ -161,7 +161,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
 
                 set -Ua --path plug_enabled $plugin
-                echo plug: (set_color -o)$plugin(set_color normal) enabled
+                echo plug: enabled (set_color -o)$plugin(set_color normal)
             end
         case disable
             for plugin in $plugins
@@ -190,7 +190,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
 
                 set -e plug_enabled[$index]
-                echo plug: (set_color -o)$plugin(set_color normal) disabled
+                echo plug: disabled (set_color -o)$plugin(set_color normal)
             end
         case update up
         case pin
@@ -208,7 +208,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
 
                 set -Ua plug_pinned $plugin
-                echo plug: (set_color -o)$plugin(set_color normal) pinned
+                echo plug: pinned (set_color -o)$plugin(set_color normal)
             end
         case unpin
             for plugin in $plugins
@@ -225,7 +225,7 @@ function plug -a cmd -d "Manage Fish plugins"
                 end
 
                 set -e plug_pinned[$index]
-                echo plug: (set_color -o)$plugin(set_color normal) unpinned
+                echo plug: unpinned (set_color -o)$plugin(set_color normal)
             end
         case "*"
             echo plug: Unknown command (set_color -o)$cmd(set_color normal) >&2
