@@ -76,8 +76,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set fish_complete_path $fish_complete_path[1] $plug_path/$plug_enabled/completions $fish_complete_path[2..]
             set fish_function_path $fish_function_path[1] $plug_path/$plug_enabled/functions $fish_function_path[2..]
 
-            set -q _PLUG_CONF_PATH || set -gx _PLUG_CONF_PATH $plug_path/$plug_enabled/conf.d/*.fish
-            _plug_source $_PLUG_CONF_PATH
+            _plug_source $plug_path/$plug_enabled/conf.d/*.fish
         case enable
             for plugin in $plugins
                 set -l plugin_path $plug_path/$plugin
