@@ -10,8 +10,6 @@ complete plug -n "__fish_seen_subcommand_from list ls" -s d -l disabled -d "List
 complete plug -n "__fish_seen_subcommand_from list ls" -s p -l pinned -d "List pinned plugins"
 complete plug -n "__fish_seen_subcommand_from list ls" -s u -l unpinned -d "List unpinned plugins"
 
-complete plug -n "__fish_seen_subcommand_from init" -s s -l script -d "Generate init script"
-
 complete plug -x -n "__fish_seen_subcommand_from enable" -a "(plug list -d)"
 
 complete plug -x -n "__fish_seen_subcommand_from disable" -a "(plug list -e)"
