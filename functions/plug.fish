@@ -90,9 +90,7 @@ function plug -a cmd -d "Manage Fish plugins"
             set fish_complete_path $fish_complete_path[1] $complete_path $fish_complete_path[2..]
             set fish_function_path $fish_function_path[1] $function_path $fish_function_path[2..]
 
-            for file in $plug_path/$_plug_enabled/conf.d/*.fish
-                source $file
-            end
+            _plug_source $plug_path/$_plug_enabled/conf.d/*.fish
         case enable
             for plugin in $plugins
                 set -l plugin_path $plug_path/$plugin
@@ -190,4 +188,12 @@ function plug -a cmd -d "Manage Fish plugins"
 
 
     return $_status
+end
+
+function _plug_source
+    for file in $argv
+        if ! test -f (string replace -r "^.*/" $__fish_config_dir/conf.d/ -- $file)
+            source $file
+        end
+    end
 end
