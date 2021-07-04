@@ -193,6 +193,17 @@ function plug -a cmd -d "Manage Fish plugins"
                 echo plug: disabled (set_color -o)$plugin(set_color normal)
             end
         case update up
+            test (count $plugins) = 0 && set plugins (plug list -e)
+
+            for plugin in $plugins
+                if ! test -d $plug_path/$plugin
+                    echo plug: (set_color -o)$plugin(set_color normal) is not installed >&2
+                    set _status 1 && continue
+                end
+
+                echo plug: updating (set_color -o)$plugin(set_color normal)
+                git -C $plug_path/$plugin pull
+            end
         case pin
             for plugin in $plugins
                 set -l plugin_path $plug_path/$plugin
