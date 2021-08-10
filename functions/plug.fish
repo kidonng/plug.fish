@@ -134,6 +134,7 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for file in $plug_path/$plug_enabled/conf.d/*.fish
                 if ! test -f (string replace -r "^.*/" $__fish_config_dir/conf.d/ -- $file)
+                    and test -f $file && test -r $file
                     source $file
                 end
             end
