@@ -152,7 +152,7 @@ function plug -a cmd -d "Manage Fish plugins"
                     set _status 1 && continue
                 end
 
-                for file in $plugin_path/{completions,functions}/*.fish
+                for file in $plugin_path/{functions,completions}/*.fish
                     source $file
                 end
 
