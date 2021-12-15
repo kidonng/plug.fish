@@ -120,7 +120,7 @@ function plug -a cmd -d "Manage Fish plugins"
 
             for plugin in $plugins
                 echo plug: updating (set_color -o)$plugin(set_color normal)
-                fish -c "$_plug_update; _plug_update $plugin" &
+                fish -c "$plug_update; _plug_update $plugin" &
             end
 
             wait
