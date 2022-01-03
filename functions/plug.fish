@@ -190,7 +190,7 @@ function plug -a cmd -d "Manage Fish plugins"
                     complete -e (string match -r $regex $file)[2]
                 end
 
-                set -e plug_enabled[$index]
+                set -Ue plug_enabled[$index]
                 echo plug: disabled (set_color -o)$plugin(set_color normal)
             end
         case update up
@@ -236,7 +236,7 @@ function plug -a cmd -d "Manage Fish plugins"
                     set _status 1 && continue
                 end
 
-                set -e plug_pinned[$index]
+                set -Ue plug_pinned[$index]
                 echo plug: unpinned (set_color -o)$plugin(set_color normal)
             end
         case "*"
