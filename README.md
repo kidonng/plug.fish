@@ -9,6 +9,14 @@
 - Pin a plugin to stop updating
 - Support [Fisher plugin](https://github.com/jorgebucaran/fisher#creating-a-plugin)
 
+## Motivation
+
+[Fisher](https://github.com/jorgebucaran/fisher) is simple, reliable and proposed a wonderful event system for plugin authors. Inspired by Fisher, plug.fish was created with the following goals:
+
+- `~/.config/fish` (`$__fish_config_dir`) is never used so it belongs to you
+- Build on top of `$fish_complete_path` and `$fish_funciton_path` so plugins like [fishion](https://github.com/kidonng/fishion) are possible
+- Proper [`conf.d` loading](https://github.com/fish-shell/fish-shell/blob/da32b6c172dcfe54c9dc4f19e46f35680fc8a91a/share/config.fish#L257-L269)
+
 ## Installation
 
 1. Run following commands:
