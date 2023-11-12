@@ -15,8 +15,6 @@ function plugin_uninstall
         # `--force` needed for `.git` directory
         rm --recursive --force $plugin_dir
 
-        set_color --bold
-        echo Uninstalled $plugin_name
-        set_color normal
+        echo Uninstalled (set_color --bold)$plugin_name(set_color normal)
     end
 end

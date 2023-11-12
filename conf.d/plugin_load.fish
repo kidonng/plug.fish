@@ -26,9 +26,7 @@ for plugin in $plugins
             end
         end
     else
-        set_color --bold
-        echo Installing $plugin_name
-        set_color normal
+        echo Installing (set_color --bold)$plugin_name(set_color normal)
 
         git clone --quiet --filter blob:none $plugin $plugin_dir
 

@@ -5,9 +5,7 @@ function plugin_update
         set --local plugin_name (path basename $plugin)
         set --local plugin_dir $plugins_dir/$plugin_name
 
-        set_color --bold
-        echo Updating $plugin_name
-        set_color normal
+        echo Updating (set_color --bold)$plugin_name(set_color normal)
 
         git -C $plugin_dir pull --quiet
 
