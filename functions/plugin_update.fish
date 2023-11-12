@@ -10,5 +10,10 @@ function plugin_update
         set_color normal
 
         git -C $plugin_dir pull --quiet
+
+        for conf in $plugin_dir/conf.d/*.fish
+            source $conf
+            emit (path basename $conf | path change-extension '')_update
+        end
     end
 end
