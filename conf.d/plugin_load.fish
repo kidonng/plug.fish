@@ -1,5 +1,5 @@
-test -n "$plugin_loaded" && exit
-set --global plugin_loaded yes
+test -n "$_plugin_loaded" && exit
+set --global _plugin_loaded yes
 
 set --local plugins_dir $__fish_user_data_dir/plugins
 set --local user_conf (path basename $__fish_config_dir/conf.d/*.fish)
