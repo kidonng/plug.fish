@@ -2,6 +2,9 @@
 
 Minimalistic Git-based fish plugin manager.
 
+> **NOTE**
+> plug.fish v3 is a complete rewrite. Previous versions are available on other branches.
+
 ## Features
 
 - Doesn't occupy `~/.config/fish`
