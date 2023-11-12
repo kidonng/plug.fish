@@ -39,9 +39,9 @@ Adding plugins is as easy as setting `$plugins`:
 ```fish
 # Missing plugins are downloaded the next shell session
 set plugins \
-	https://github.com/kidonng/plug.fish \
+    https://github.com/kidonng/plug.fish \
     https://github.com/other/plugin \
-	~/any/git/repository
+    ~/any/git/repository
 ```
 
 Update plugins by running `plugin_update`:
@@ -56,7 +56,7 @@ Don't want some plugin to update? Add it to `$plugins_pinned`:
 
 ```fish
 set plugins \
-	https://github.com/kidonng/plug.fish \
+    https://github.com/kidonng/plug.fish \
     https://github.com/plugin/to-be-pinned
 # Use the last segment as identifier 
 set plugins_pinned to-be-pinned
@@ -77,7 +77,7 @@ Don't like editing config files? Make `$plugins` a [universal variable](https://
 
 ```shellsession
 $ set --universal plugins \
-	https://github.com/kidonng/plug.fish \
+    https://github.com/kidonng/plug.fish \
     https://github.com/plugin/foo
 
 $ # Add plugin bar
@@ -94,7 +94,7 @@ Edit `~/.config/fish/config.fish`:
 ```diff
 - set plugins \
 + set --query plugins || set plugins \
-	https://github.com/kidonng/plug.fish \
+    https://github.com/kidonng/plug.fish \
     https://github.com/plugin/foo \
     https://github.com/plugin/bar
 ```
