@@ -1,12 +1,12 @@
 function plugin_update
-    set --local dir $__fish_user_data_dir/plugins
+    set --local plugins_dir $__fish_user_data_dir/plugins
 
     for plugin in $plugins
-        set --local name (path basename $plugin)
-        set --local plugin_dir $dir/$name
+        set --local plugin_name (path basename $plugin)
+        set --local plugin_dir $plugins_dir/$plugin_name
 
         set_color --bold
-        echo Updating $name
+        echo Updating $plugin_name
         set_color normal
 
         git -C $plugin_dir pull --quiet

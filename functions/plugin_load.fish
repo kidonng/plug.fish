@@ -1,14 +1,16 @@
 function plugin_load
-    set --local dir $__fish_user_data_dir/plugins
+    set --local plugins_dir $__fish_user_data_dir/plugins
+    set --local user_conf (path basename $__fish_config_dir/conf.d/*.fish)
 
     for plugin in $plugins
-        set --local name (path basename $plugin)
-        set --local plugin_dir $dir/$name
+        set --local plugin_name (path basename $plugin)
+        set --local plugin_dir $plugins_dir/$plugin_name
 
         set fish_complete_path \
             $fish_complete_path[1] \
             $plugin_dir/completions \
             $fish_complete_path[2..]
+        # Functions should be available before emitting events
         set fish_function_path \
             $fish_function_path[1] \
             $plugin_dir/functions \
@@ -16,11 +18,14 @@ function plugin_load
 
         if test -e $plugin_dir
             for conf in $plugin_dir/conf.d/*.fish
-                source $conf
+                # Support masking
+                if ! contains (path basename $conf) $user_conf
+                    source $conf
+                end
             end
         else
             set_color --bold
-            echo Installing $name
+            echo Installing $plugin_name
             set_color normal
 
             git clone --quiet --filter blob:none $plugin $plugin_dir
