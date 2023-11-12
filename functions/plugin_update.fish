@@ -5,6 +5,11 @@ function plugin_update
         set --local plugin_name (path basename $plugin)
         set --local plugin_dir $plugins_dir/$plugin_name
 
+        if contains $plugin_name $plugins_pinned
+            echo Skip updating (set_color --bold)$plugin_name(set_color normal)
+            continue
+        end
+
         echo Updating (set_color --bold)$plugin_name(set_color normal)
 
         git -C $plugin_dir pull --quiet
