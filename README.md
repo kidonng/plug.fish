@@ -29,7 +29,7 @@ curl -L https://l0c.cc/plug.fish | plugins=https://github.com/kidonng/plug.fish 
 
 ```fish
 set plugins https://github.com/kidonng/plug.fish
-source $__fish_user_data_dir/plugins/conf.d/plugin_load.fish
+source $__fish_user_data_dir/plugins/plug.fish/conf.d/plugin_load.fish
 ```
 
 ## Usage
