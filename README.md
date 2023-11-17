@@ -22,8 +22,8 @@
 1. Run following commands:
 
 ```fish
-curl --silent --show-error --location https://git.io/fish-plug | source
-plug install kidonng/plug.fish
+curl -silent --show-error --location https://raw.githubusercontent.com/kidonng/plug.fish/v2/functions/plug.fish | source
+PLUG_GIT='--depth 1 -q --branch v2' plug install kidonng/plug.fish
 ```
 
 2. Add the following commands to the top of `~/.config/fish/config.fish`:
