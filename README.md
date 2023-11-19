@@ -2,7 +2,7 @@
 
 Minimalistic Git-based fish plugin manager.
 
-> **NOTE**
+> [!NOTE]
 > plug.fish v3 is a complete rewrite. Previous versions are available on other branches.
 
 ## Features
