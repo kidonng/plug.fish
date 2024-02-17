@@ -22,7 +22,7 @@ Minimalistic Git-based fish plugin manager.
 1. Run this one-liner:
 
 ```fish
-curl -L https://l0c.cc/plug.fish | plugins=https://github.com/kidonng/plug.fish source
+curl -L https://github.com/kidonng/plug.fish/raw/v3/conf.d/plugin_load.fish | plugins=https://github.com/kidonng/plug.fish source
 ```
 
 2. Add the following to your `~/.config/fish/config.fish`
