@@ -12,6 +12,13 @@ function plugin_update
 
         git -C $plugin_dir pull --quiet
 
+        for theme in $plugin_dir/themes/*.theme
+            set --local theme_name (path basename $theme)
+            set --local theme_dest $__fish_config_dir/themes/$theme_name
+
+            cp $theme $theme_dest
+        end
+
         for conf in $plugin_dir/conf.d/*.fish
             source $conf
             emit (path basename $conf | path change-extension '')_update

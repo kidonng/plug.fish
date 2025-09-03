@@ -25,6 +25,15 @@ for plugin in $plugins
         git clone --quiet --filter blob:none $plugin $plugin_dir
     end
 
+    for theme in $plugin_dir/themes/*.theme
+        set --local theme_name (path basename $theme)
+        set --local theme_dest $__fish_config_dir/themes/$theme_name
+
+        test -d $__fish_config_dir/themes || mkdir -p $__fish_config_dir/themes
+
+        cp $theme $theme_dest
+    end
+
     for conf in $plugin_dir/conf.d/*.fish
         # Support masking
         contains (path basename $conf) $user_conf && continue

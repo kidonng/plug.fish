@@ -11,6 +11,14 @@ function plugin_uninstall
         for conf in $plugin_dir/conf.d/*.fish
             emit (path basename $conf | path change-extension '')_uninstall
         end
+
+        for theme in $plugin_dir/themes/*.theme
+            set --local theme_name (path basename $theme)
+            set --local theme_dest $__fish_config_dir/themes/$theme_name
+
+            test -f $theme_dest && rm $theme_dest
+        end
+
         # `--force` needed for `.git` directory
         rm --recursive --force $plugin_dir
 
